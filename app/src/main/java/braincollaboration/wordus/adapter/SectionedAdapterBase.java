@@ -82,7 +82,7 @@ public abstract class SectionedAdapterBase<T extends Categorizable> extends Recy
                 return this.onCreateItemViewHolder(parent, viewType);
             }
             default: {
-                throw new RuntimeException("SectionedAdapterBase could not create a ViewHolder for the requested view type.");
+                throw new RuntimeException("SectionedAdapterBase could not create a WordViewHolder for the requested view type.");
             }
         }
     }
@@ -125,7 +125,7 @@ public abstract class SectionedAdapterBase<T extends Categorizable> extends Recy
     /**
      * Sets a layout resource to inflate when creating the headers for sections.  The specified
      * layout must contain a TextView with the id <code>android.R.id.title</code> or else an
-     * exception will be thrown when the ViewHolder is later bound.
+     * exception will be thrown when the WordViewHolder is later bound.
      *
      * @param headerResource the resource ID
      */
@@ -145,17 +145,17 @@ public abstract class SectionedAdapterBase<T extends Categorizable> extends Recy
 
     /**
      * This method is called to create a {@link android.support.v7.widget.RecyclerView.ViewHolder}
-     * for each item in the adapter.  It should return a ViewHolder subclass suitable for binding
+     * for each item in the adapter.  It should return a WordViewHolder subclass suitable for binding
      * to the specified view type.
      *
      * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
      * @param viewType The type of the new View
-     * @return A new ViewHolder that holds a View of the given view type.
+     * @return A new WordViewHolder that holds a View of the given view type.
      */
     public abstract RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, @ViewType int viewType);
 
     /**
-     * A ViewHolder for holding a section header's View.
+     * A WordViewHolder for holding a section header's View.
      */
     private static class SectionViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleView;
