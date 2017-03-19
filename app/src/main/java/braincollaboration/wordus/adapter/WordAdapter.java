@@ -20,6 +20,7 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, Word item, @ViewType int viewType) {
         WordViewHolder myHolder = (WordViewHolder) holder;
         myHolder.wordName.setText(item.getWordName());
+        myHolder.wordDescription.setText(item.getWordDescription());
     }
 
     @Override
@@ -31,10 +32,12 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     private class WordViewHolder extends RecyclerView.ViewHolder {
 
         TextView wordName;
+        TextView wordDescription;
 
         WordViewHolder(View itemView) {
             super(itemView);
             wordName = (TextView) itemView.findViewById(R.id.item_word_text_view);
+            wordDescription = (TextView) itemView.findViewById(R.id.item_word_description);
         }
     }
 

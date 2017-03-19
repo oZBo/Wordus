@@ -13,7 +13,7 @@ import braincollaboration.wordus.model.Word;
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView wordsListView;
-    ArrayList<Word> words = new ArrayList();
+    ArrayList<Word> wordsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,31 +23,30 @@ public class MainActivity extends AppCompatActivity {
         initWidgets();
     }
 
-    private void initWidgets() {
+    private void initWidgets(){
         wordsListView = (RecyclerView) findViewById(R.id.recycler_view);
         wordsListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         WordAdapter adapter = new WordAdapter();
+        adapter.setItemList(wordsList);
         wordsListView.setAdapter(adapter);
-        adapter.setItemList(words);
     }
 
-    private void fillStubList() {
-        for (int i = 0; i < 50; i++) {
+    private void fillStubList(){
+        for(int i = 0; i < 50; i++){
             Word word = new Word();
-            word.setWordName("Aaa");
-            if (i >= 10) {
-                word.setWordName("Bbbb");
+            word.setWordName("Wasd");
+            word.setWordDescription("Wasd");
+            if(i >= 10){
+               word.setWordName("Aaaa");
+            } if(i >= 20){
+                word.setWordName("bbbbb");
+            } if(i >= 30){
+                word.setWordName("Ccccc");
+            } if(i >= 40){
+                word.setWordName("Ddddd");
             }
-            if (i >= 20) {
-                word.setWordName("Gggg");
-            }
-            if (i >= 30) {
-                word.setWordName("Hhhhh");
-            }
-            if (i >= 40) {
-                word.setWordName("Ooo");
-            }
-            words.add(word);
+            wordsList.add(word);
         }
     }
+
 }
