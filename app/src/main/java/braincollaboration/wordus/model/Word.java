@@ -5,27 +5,36 @@ import braincollaboration.wordus.adapter.Categorizable;
 
 public class Word implements Categorizable{
 
-    private String wordName;
-    private String wordDescription;
+    private String name;
+    private String description;
+    private int id;
 
-    public String getWordName() {
-        return wordName;
+    public String getName() {
+        return name;
     }
 
-    public void setWordName(String wordName) {
-        this.wordName = wordName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getWordDescription() {
-        return wordDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setWordDescription(String wordDescription) {
-        this.wordDescription = wordDescription;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
     public String getCategory() {
-        return String.valueOf(wordName.charAt(0));
+        return String.valueOf(name.charAt(0));
     }
 }

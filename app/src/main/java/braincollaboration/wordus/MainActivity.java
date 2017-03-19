@@ -34,16 +34,16 @@ public class MainActivity extends AppCompatActivity {
     private void fillStubList(){
         for(int i = 0; i < 50; i++){
             Word word = new Word();
-            word.setWordName("Wasd");
-            word.setWordDescription("Wasd");
+            word.setName("Wasd");
+            word.setDescription("Wasd");
             if(i >= 10){
-               word.setWordName("Aaaa");
+               word.setName("Aaaa");
             } if(i >= 20){
-                word.setWordName("bbbbb");
+                word.setName("bbbbb");
             } if(i >= 30){
-                word.setWordName("Ccccc");
+                word.setName("Ccccc");
             } if(i >= 40){
-                word.setWordName("Ddddd");
+                word.setName("Ddddd");
             }
             wordsList.add(word);
         }

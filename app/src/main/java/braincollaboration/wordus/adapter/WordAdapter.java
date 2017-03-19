@@ -19,8 +19,8 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, Word item, @ViewType int viewType) {
         WordViewHolder myHolder = (WordViewHolder) holder;
-        myHolder.wordName.setText(item.getWordName());
-        myHolder.wordDescription.setText(item.getWordDescription());
+        myHolder.wordName.setText(item.getName());
+        myHolder.wordDescription.setText(item.getDescription());
     }
 
     @Override
