@@ -5,7 +5,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by braincollaboration on 19/03/2017.
@@ -13,10 +13,10 @@ import retrofit2.http.Path;
 
 public interface ApiInterface {
 
-    @POST("api/v1.1/authenticate")
+    @POST("/api/v1.1/authenticate")
     Call<String> getBearerByToken(@Header("Authorization") String apiToken);
 
-    @GET("api/v1/Article")
-    Call<WordResponse> getWordMeaning(@Header("Authorization") String bearer, @Path("api_key") String key);
+    @GET("/api/v1/Article?")
+    Call<WordResponse> getWordMeaning(@Header("Authorization") String bearer, @Query("heading") String heading, @Query("dict") String dictName, @Query("srcLang") String srcLang, @Query("dstLang") String dstLang);
 
 }
