@@ -6,8 +6,10 @@ import android.os.AsyncTask;
 
 import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
 
+import static braincollaboration.wordus.asyncTask.DataBaseWorkState.*;
 
-public class AddWordInDBTask extends AsyncTask<String, Void, Integer> {
+
+public class AddWordInDBTask extends AsyncTask<String, Void, DataBaseWorkState> {
 
     private AddWordInDBCallback addWordInDBCallback;
     private Context context;
@@ -23,30 +25,34 @@ public class AddWordInDBTask extends AsyncTask<String, Void, Integer> {
     }
 
     @Override
-    protected Integer doInBackground(String... params) {
+    protected DataBaseWorkState doInBackground(String... params) {
         String word = params[0];
         SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(context);
-        int result = 0;
+        DataBaseWorkState workState = DB_ERROR;
         if (db != null) {
             if (WordusDatabaseHelper.addInDB(db, word)) {
-                result = 1;
+                workState = WORD_ADDED_SUCCESSFUL;
             } else {
-                result = 2;
+                workState = WORD_ALREADY_EXIST;
             }
         } else {
-            return result;
+            return workState;
         }
-        return result;
+        return workState;
     }
 
     @Override
-    protected void onPostExecute(Integer result) {
-        if (result == 0) {
-            addWordInDBCallback.dbIsUnavailable();
-        } else if (result == 1) {
-            addWordInDBCallback.wordWasAdded();
-        } else {
-            addWordInDBCallback.dbContainDuplicate();
+    protected void onPostExecute(DataBaseWorkState result) {
+        switch (result){
+            case DB_ERROR:
+                addWordInDBCallback.dbIsUnavailable();
+                break;
+            case WORD_ADDED_SUCCESSFUL:
+                addWordInDBCallback.wordWasAdded();
+                break;
+            case WORD_ALREADY_EXIST:
+                addWordInDBCallback.dbContainDuplicate();
+                break;
         }
     }
 
