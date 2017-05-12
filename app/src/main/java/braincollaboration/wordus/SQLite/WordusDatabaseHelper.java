@@ -2,21 +2,42 @@ package braincollaboration.wordus.SQLite;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import braincollaboration.wordus.MainActivity;
+import braincollaboration.wordus.R;
+import braincollaboration.wordus.model.Word;
+import braincollaboration.wordus.utils.Constants;
 
 public class WordusDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "wordus"; // Datebase name
     private static final int DB_VERSION = 1; // Datebse ver.
 
-    public static final String TABLE_NAME = "WORDS";
-    public static final String COLUMN_ID= "_id";
-    public static final String COLUMN_NAME = "NAME";
-    public static final String COLUMN_DESCRIPTION = "DESCRIPTION";
+    private static final String TABLE_NAME = "WORDS";
+    private static final String COLUMN_ID = "_id";
+    private static final String COLUMN_NAME = "NAME";
+    private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
 
-    public WordusDatabaseHelper(Context context) {
+    private static WordusDatabaseHelper instance;
+
+    private WordusDatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+    }
+
+    public static synchronized WordusDatabaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new WordusDatabaseHelper(context);
+        }
+        return instance;
     }
 
     @Override
@@ -37,14 +58,14 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static void insertWord(SQLiteDatabase db, ContentValues wordValues) {
+    private static void insertWord(SQLiteDatabase db, ContentValues wordValues) {
 
         if (db != null && wordValues != null) {
             db.insert(TABLE_NAME, null, wordValues);
         }
     }
 
-    public static void updateWord(SQLiteDatabase db,
+    private static void updateWord(SQLiteDatabase db,
                                    ContentValues wordValues,
                                    String whereClause,
                                    String whereArgs) {
@@ -55,7 +76,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static void deleteWord (SQLiteDatabase db, String whereClause,
+    private static void deleteWord(SQLiteDatabase db, String whereClause,
                                    String whereArgs) {
         String[] whereArgs1 = {whereArgs};
 
@@ -65,7 +86,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
     }
 
     // makes Value to use it for datebase changes
-    public static ContentValues makeWordValue (ContentValues contentValues, String where, String what) {
+    private static ContentValues makeWordValue(ContentValues contentValues, String where, String what) {
         ContentValues wordValues;
 
         if (contentValues == null) {
@@ -79,7 +100,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         return wordValues;
     }
 
-    public static ContentValues makeWordValue (ContentValues contentValues, String where, Integer what) {
+    private static ContentValues makeWordValue(ContentValues contentValues, String where, Integer what) {
         ContentValues wordValues;
 
         if (contentValues == null) {
@@ -91,5 +112,82 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         wordValues.put(where, what);
 
         return wordValues;
+    }
+
+    private static Boolean isDBContainAWord(SQLiteDatabase db, String word) {
+        Cursor cursor = db.query(TABLE_NAME,
+                new String[]{COLUMN_NAME},
+                COLUMN_NAME + " = ?",
+                new String[]{word},
+                null, null, null);
+
+        Boolean contain = cursor.moveToFirst();
+        cursor.close();
+        return contain;
+    }
+
+    public static Boolean addInDB(SQLiteDatabase db, String s) {
+        Boolean result;
+        // checks is database contains current Word
+        if (!isDBContainAWord(db, s)) {
+            ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, s);
+            insertWord(db, wordNameValue);
+            result = true;
+            Log.d(Constants.LOG_TAG, "word added in db");
+        } else {
+            result = false;
+            Log.d(Constants.LOG_TAG, "word already contains in db");
+        }
+        db.close();
+
+        return result;
+    }
+
+    public static List<Word> getDataSet(Context context) {
+        List<Word> dataSet = new ArrayList<>();
+        try {
+            SQLiteDatabase db = getInstance(context).getReadableDatabase();
+            Cursor cursor = db.query(TABLE_NAME,
+                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION},
+                    null, null, null, null, null);
+            if (cursor.moveToFirst()) {
+                Word word = new Word();
+                word.setWordName(cursor.getString(0));
+                word.setWordDescription(cursor.getString(1));
+                dataSet.add(word);
+                while (cursor.moveToNext()) {
+                    word = new Word();
+                    word.setWordName(cursor.getString(0));
+                    word.setWordDescription(cursor.getString(1));
+                    dataSet.add(word);
+                }
+            }
+            db.close();
+            cursor.close();
+        } catch (SQLException sqle) {
+            Log.d(Constants.LOG_TAG, "database unavailable");
+        }
+
+        return dataSet;
+    }
+
+    public static SQLiteDatabase getWritableDB(Context context) {
+        SQLiteDatabase db = null;
+        try {
+            db = getInstance(context).getWritableDatabase();
+        } catch (SQLException sqlEx) {
+            Log.d(Constants.LOG_TAG, "writable database unavailable");
+        }
+        return db;
+    }
+
+    public static SQLiteDatabase getReadableDB(Context context) {
+        SQLiteDatabase db = null;
+        try {
+            db = getInstance(context).getReadableDatabase();
+        } catch (SQLException sqlEx) {
+            Log.d(Constants.LOG_TAG, "readable database unavailable");
+        }
+        return db;
     }
 }
