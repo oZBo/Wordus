@@ -17,35 +17,45 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="450dp"
-        android:background="@android:color/darker_gray"
+        android:background="@android:color/white"
         android:orientation="vertical"
-        app:behavior_hideable="false"
+        app:behavior_hideable="true"
         app:behavior_peekHeight="80dp"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
         <TextView
-            android:id="@+id/bottom_textfield_peak"
+            android:id="@+id/bottom_sheet_top_text"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:background="@color/colorAccent"
             android:gravity="center"
             android:text="@string/bottom_sheet_peek"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <TextView
-                android:id="@+id/bottom_sheet_textfield_content"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/bottom_sheet_content"
-                android:textColor="@android:color/white"
-                android:textIsSelectable="true" />
-        </android.support.v4.widget.NestedScrollView>
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/bottom_sheet_bottom_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.2"
+                    android:text="@string/bottom_sheet_content"
+                    android:textColor="@color/almostBlackTextColor"
+                    android:textIsSelectable="true"
+                    android:textSize="18sp" />
+
+                </LinearLayout>
+            </ScrollView>
 
     </LinearLayout>
 

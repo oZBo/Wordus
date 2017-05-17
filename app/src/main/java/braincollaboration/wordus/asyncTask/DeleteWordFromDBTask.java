@@ -6,22 +6,17 @@ import android.os.AsyncTask;
 
 import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
 
-import static braincollaboration.wordus.asyncTask.DataBaseWorkState.*;
+import static braincollaboration.wordus.asyncTask.DataBaseWorkState.DB_ERROR;
+import static braincollaboration.wordus.asyncTask.DataBaseWorkState.WORD_DELETED_SUCCESSFUL;
 
+public class DeleteWordFromDBTask extends AsyncTask<String, Void, DataBaseWorkState> {
 
-public class AddWordInDBTask extends AsyncTask<String, Void, DataBaseWorkState> {
+    Context context;
+    DeleteWordFromDBCallback deleteWordFromDBCallback;
 
-    private AddWordInDBCallback addWordInDBCallback;
-    private Context context;
-
-    public AddWordInDBTask(Context context, AddWordInDBCallback addWordInDBCallback) {
-        this.addWordInDBCallback = addWordInDBCallback;
+    public DeleteWordFromDBTask(Context context, DeleteWordFromDBCallback deleteWordFromDBCallback) {
         this.context = context;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
+        this.deleteWordFromDBCallback = deleteWordFromDBCallback;
     }
 
     @Override
@@ -30,8 +25,8 @@ public class AddWordInDBTask extends AsyncTask<String, Void, DataBaseWorkState> 
         SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(context);
         DataBaseWorkState workState = DB_ERROR;
         if (db != null) {
-            WordusDatabaseHelper.addInDB(db, word);
-            workState = WORD_ADDED_SUCCESSFUL;
+            WordusDatabaseHelper.deleteWord(db, word);
+            workState = WORD_DELETED_SUCCESSFUL;
         }
         return workState;
     }
@@ -40,10 +35,10 @@ public class AddWordInDBTask extends AsyncTask<String, Void, DataBaseWorkState> 
     protected void onPostExecute(DataBaseWorkState result) {
         switch (result) {
             case DB_ERROR:
-                addWordInDBCallback.dbIsUnavailable();
+                deleteWordFromDBCallback.dbIsUnavailable();
                 break;
             case WORD_ADDED_SUCCESSFUL:
-                addWordInDBCallback.wordWasAdded();
+                deleteWordFromDBCallback.wordWasDeleted();
                 break;
         }
     }

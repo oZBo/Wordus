@@ -76,12 +76,11 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private static void deleteWord(SQLiteDatabase db, String whereClause,
-                                   String whereArgs) {
+    public static void deleteWord(SQLiteDatabase db, String whereArgs) {
         String[] whereArgs1 = {whereArgs};
 
-        if ((whereClause != null || whereArgs != null) && db != null) {
-            db.delete(TABLE_NAME, whereClause + " = ?", whereArgs1);
+        if (whereArgs != null && db != null) {
+            db.delete(TABLE_NAME, COLUMN_NAME + " = ?", whereArgs1);
         }
     }
 
@@ -114,7 +113,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         return wordValues;
     }
 
-    private static Boolean isDBContainAWord(SQLiteDatabase db, String word) {
+    public static Boolean isDBContainAWord(SQLiteDatabase db, String word) {
         Cursor cursor = db.query(TABLE_NAME,
                 new String[]{COLUMN_NAME},
                 COLUMN_NAME + " = ?",
@@ -126,21 +125,12 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         return contain;
     }
 
-    public static Boolean addInDB(SQLiteDatabase db, String s) {
-        Boolean result;
-        // checks is database contains current Word
-        if (!isDBContainAWord(db, s)) {
-            ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, s);
-            insertWord(db, wordNameValue);
-            result = true;
-            Log.d(Constants.LOG_TAG, "word added in db");
-        } else {
-            result = false;
-            Log.d(Constants.LOG_TAG, "word already contains in db");
-        }
-        db.close();
+    public static void addInDB(SQLiteDatabase db, String s) {
+        ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, s);
+        insertWord(db, wordNameValue);
+        Log.d(Constants.LOG_TAG, "word added in db");
 
-        return result;
+        db.close();
     }
 
     public static List<Word> getDataSet(Context context) {

@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/colorAccent"
     android:layout_height="48dp"
+    android:background="@color/separatorColor"
     android:gravity="center"
     android:orientation="vertical">
 
@@ -13,6 +13,9 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textAllCaps="true"
+        android:textColor="@color/almostBlackTextColor"
+        android:textSize="22sp"
+        android:textStyle="bold"
         tools:text="Header" />
 
 </LinearLayout>

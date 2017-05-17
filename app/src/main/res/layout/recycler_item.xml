@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recycler_item_relativeLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="48dp"
     android:orientation="horizontal">
 
     <TextView
@@ -15,15 +15,19 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/hello_world"
-        android:textSize="20sp" />
+        android:textColor="@color/almostBlackTextColor"
+        android:textSize="22sp" />
 
     <Button
         android:id="@+id/recyclerViewItemDeleteButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:gravity="center"
-        android:background="@drawable/ic_delete_forever_black_48dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/ic_delete_variant"
+        android:gravity="center|center_horizontal" />
 
 </RelativeLayout>
