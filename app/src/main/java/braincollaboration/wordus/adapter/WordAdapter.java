@@ -10,14 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
-import braincollaboration.wordus.MainActivity;
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.asyncTask.DeleteWordFromDBCallback;
 import braincollaboration.wordus.asyncTask.DeleteWordFromDBTask;
@@ -25,9 +26,10 @@ import braincollaboration.wordus.dialog.DeleteDialog;
 import braincollaboration.wordus.dialog.DeleteDialogCallback;
 import braincollaboration.wordus.model.Word;
 
-public class WordAdapter extends SectionedAdapterBase<Word> {
+public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIndexer {
     private Context context;
     private WordAdapterCallback wordAdapterCallback;
+    private ArrayList<Integer> mSectionPositions;
 
     public WordAdapter(@LayoutRes int layoutResID, Context context, WordAdapterCallback wordAdapterCallback) {
         setCustomHeaderLayout(layoutResID);
@@ -61,6 +63,30 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     public RecyclerView.ViewHolder onCreateItemViewHolder(ViewGroup parent, @ViewType int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item, parent, false);
         return new ViewHolder(v);
+    }
+
+    @Override
+    public Object[] getSections() {
+        List<String> sections = new ArrayList<>(26);
+        mSectionPositions = new ArrayList<>(26);
+        for (int i = 0, size = wordAdapterCallback.getDataSet().size(); i < size; i++) {
+            String section = String.valueOf(wordAdapterCallback.getDataSet().get(i).getWordName().charAt(0)).toUpperCase();
+            if (!sections.contains(section)) {
+                sections.add(section);
+                mSectionPositions.add(i);
+            }
+        }
+        return sections.toArray(new String[0]);
+    }
+
+    @Override
+    public int getPositionForSection(int sectionIndex) {
+        return mSectionPositions.get(sectionIndex);
+    }
+
+    @Override
+    public int getSectionForPosition(int position) {
+        return 0;
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {

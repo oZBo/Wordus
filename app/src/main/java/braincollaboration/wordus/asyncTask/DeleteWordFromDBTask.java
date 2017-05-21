@@ -11,8 +11,8 @@ import static braincollaboration.wordus.asyncTask.DataBaseWorkState.WORD_DELETED
 
 public class DeleteWordFromDBTask extends AsyncTask<String, Void, DataBaseWorkState> {
 
-    Context context;
-    DeleteWordFromDBCallback deleteWordFromDBCallback;
+    private Context context;
+    private DeleteWordFromDBCallback deleteWordFromDBCallback;
 
     public DeleteWordFromDBTask(Context context, DeleteWordFromDBCallback deleteWordFromDBCallback) {
         this.context = context;

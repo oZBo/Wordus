@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="braincollaboration.wordus.MainActivity">
 
-    <android.support.v7.widget.RecyclerView
+    <in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -32,7 +32,8 @@
             android:text="@string/bottom_sheet_peek"
             android:textColor="@android:color/white"
             android:textSize="30sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
 
             <ScrollView
                 android:layout_width="match_parent"

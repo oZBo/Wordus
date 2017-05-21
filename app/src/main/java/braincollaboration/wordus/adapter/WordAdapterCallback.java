@@ -13,4 +13,6 @@ public interface WordAdapterCallback {
     void setBottomText (String s);
 
     void changeBottomSheetBehaviorForExpanded();
+
+    List<Word> getDataSet();
 }

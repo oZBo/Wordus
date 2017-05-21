@@ -40,7 +40,7 @@ public class SearchDialog {
 
         dialogBuilder
                 .setCancelable(true)
-                .setPositiveButton("Поиск",
+                .setPositiveButton(R.string.search,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 //Вводим текст и отображаем в строке ввода на основном экране:

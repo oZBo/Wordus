@@ -1,5 +1,6 @@
 package braincollaboration.wordus;
 
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -55,8 +56,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
         wordsRecycleView = (RecyclerView) findViewById(R.id.recycler_view);
+
         topText = (TextView) findViewById(R.id.bottom_sheet_top_text);
         bottomText = (TextView) findViewById(R.id.bottom_sheet_bottom_text);
+
         initAdapterCallback();
     }
 
@@ -213,6 +216,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void changeBottomSheetBehaviorForExpanded() {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+
+            @Override
+            public List<Word> getDataSet() {
+                return mDataSet;
             }
         };
     }

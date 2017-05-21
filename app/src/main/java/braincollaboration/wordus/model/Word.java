@@ -9,19 +9,19 @@ public class Word implements Categorizable{
     private String description;
     private int id;
 
-    public String getName() {
+    public String getWordName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setWordName(String name) {
         this.name = name;
     }
 
-    public String getDescription() {
+    public String getWordDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setWordDescription(String description) {
         this.description = description;
     }
 

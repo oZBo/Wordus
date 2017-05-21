@@ -12,7 +12,7 @@ public class DeleteDialog {
     private AlertDialog.Builder dialogBuilder;
     private Dialog dialog;
 
-    DeleteDialogCallback deleteDialogCallback;
+    private DeleteDialogCallback deleteDialogCallback;
 
     public DeleteDialog(Context context, DeleteDialogCallback deleteDialogCallback) {
         this.deleteDialogCallback = deleteDialogCallback;
