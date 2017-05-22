@@ -1,6 +1,5 @@
 package braincollaboration.wordus;
 
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;

@@ -7,4 +7,5 @@
     <color name="almostBlackTextColor">#333333</color>
     <color name="separatorColor">#BADEFC</color>
     <color name="indexBarColor">#E0E0E0</color>
+    <color name="foreground_alpha_50">#88313c5a</color>
 </resources>

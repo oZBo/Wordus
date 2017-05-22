@@ -1,4 +1,4 @@
-package braincollaboration.wordus.textViewClass;
+package braincollaboration.wordus.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -9,26 +9,26 @@ import android.widget.TextView;
 
 import braincollaboration.wordus.R;
 
-public class TextViewPlus extends TextView {
+public class FontTextView extends TextView {
     private static final String TAG = "TextView";
 
-    public TextViewPlus(Context context) {
+    public FontTextView(Context context) {
         super(context);
     }
 
-    public TextViewPlus(Context context, AttributeSet attrs) {
+    public FontTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setCustomFont(context, attrs);
     }
 
-    public TextViewPlus(Context context, AttributeSet attrs, int defStyle) {
+    public FontTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setCustomFont(context, attrs);
     }
 
     private void setCustomFont(Context ctx, AttributeSet attrs) {
-        TypedArray a = ctx.obtainStyledAttributes(attrs, R.styleable.TextViewPlus);
-        String customFont = a.getString(R.styleable.TextViewPlus_customFont);
+        TypedArray a = ctx.obtainStyledAttributes(attrs, R.styleable.FontTextView);
+        String customFont = a.getString(R.styleable.FontTextView_customFont);
         setCustomFont(ctx, customFont);
         a.recycle();
     }
