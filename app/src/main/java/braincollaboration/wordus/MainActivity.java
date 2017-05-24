@@ -1,6 +1,6 @@
 package braincollaboration.wordus;
 
-import android.os.AsyncTask;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
@@ -17,19 +17,18 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.adapter.WordAdapterCallback;
-import braincollaboration.wordus.asyncTask.AddWordInDBCallback;
-import braincollaboration.wordus.asyncTask.AddWordInDBTask;
-import braincollaboration.wordus.asyncTask.CheckWordDuplicateCallback;
-import braincollaboration.wordus.asyncTask.CheckWordDuplicateTask;
-import braincollaboration.wordus.asyncTask.GetDataSetCallback;
-import braincollaboration.wordus.asyncTask.GetDataSetTask;
+import braincollaboration.wordus.background.BackgroundManager;
+import braincollaboration.wordus.background.IBackgroundCallback;
+import braincollaboration.wordus.background.IBackgroundTask;
 import braincollaboration.wordus.dialog.SearchDialog;
 import braincollaboration.wordus.dialog.SearchDialogCallback;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.view.BottomScreenBehavior;
 import braincollaboration.wordus.view.HidingScrollRecyclerViewListener;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -63,14 +62,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getDataSet() {
+        // make dataSet
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<List<Word>>() {
+                                                             @Override
+                                                             public List<Word> execute() {
+                                                                 return WordusDatabaseHelper.getDataSet(WordusApp.getCurrentActivity().getApplicationContext());
+                                                             }
+                                                         },
+                new IBackgroundCallback<List<Word>>() {
+                    @Override
+                    public void doOnSuccess(List<Word> dataSet) {
+                        initRecyclerView(dataSet);
+                    }
 
-        GetDataSetTask getDataSetTask = new GetDataSetTask(MainActivity.this, new GetDataSetCallback() {
-            @Override
-            public void returnDataSet(List<Word> dataSet) {
-                initRecyclerView(dataSet);
-            }
-        });
-        getDataSetTask.execute();
+                    @Override
+                    public void doOnError(Exception e) {
+                        Toast.makeText(WordusApp.getCurrentActivity(), R.string.database_unavailable, Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
@@ -124,50 +133,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void checkDuplicateAndThenAddInDB(final String s) {
-        final String text = checkIsThisALetters(s);
+        final String word = checkIsThisALetters(s);
 
-        CheckWordDuplicateTask checkWordDuplicateTask = new CheckWordDuplicateTask(MainActivity.this, new CheckWordDuplicateCallback() {
-            @Override
-            public void dbNotContainDuplicate() {
-                addInDBFinal(text);
-            }
+        if (word.compareTo("") != 0) {
+            // check db word duplicate task
+            BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
+                                             @Override
+                                             public Boolean execute() {
+                                                 SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                                                 Boolean result = false;
+                                                 if (db != null) {
+                                                     result = WordusDatabaseHelper.isDBContainAWord(db, word);
+                                                 }
+                                                 return result;
+                                             }
+                                         },
+                    new IBackgroundCallback<Boolean>() {
+                        @Override
+                        public void doOnSuccess(Boolean result) {
+                            if (!result) {
+                                addInDBFinal(word);
+                            } else {
+                                Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
+                            }
+                        }
 
-            @Override
-            public void dbContainDuplicate() {
-                Toast.makeText(MainActivity.this, R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void dbIsUnavailable() {
-                Toast.makeText(MainActivity.this, R.string.database_unavailable, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        if (text.compareTo("") != 0) {
-            checkWordDuplicateTask.execute(text);
+                        @Override
+                        public void doOnError(Exception e) {
+                            Toast.makeText(WordusApp.getCurrentActivity(), R.string.database_unavailable, Toast.LENGTH_SHORT).show();
+                        }
+                    });
         } else {
-            Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(WordusApp.getCurrentActivity(), R.string.empty_word_error, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void addInDBFinal(final String text) {
-        AddWordInDBTask addWordInDBTask = new AddWordInDBTask(MainActivity.this, new AddWordInDBCallback() {
-            @Override
-            public void dbIsUnavailable() {
-                Toast.makeText(MainActivity.this, R.string.database_unavailable, Toast.LENGTH_SHORT).show();
-            }
+    private void addInDBFinal(final String word) {
+        // add word in db task
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
+                                         @Override
+                                         public Boolean execute() {
+                                             SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                                             WordusDatabaseHelper.addInDB(db, word);
+                                             return true;
+                                         }
+                                     },
+                new IBackgroundCallback<Boolean>() {
+                    @Override
+                    public void doOnSuccess(Boolean result) {
+                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void wordWasAdded() {
-                Toast.makeText(MainActivity.this, getString(R.string.word_) + " " + text + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
-            }
-        });
-        addWordInDBTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, text);
+                    @Override
+                    public void doOnError(Exception e) {
+                        Toast.makeText(WordusApp.getCurrentActivity(), R.string.database_unavailable, Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         //adding word in RecyclerView
-        Word word = new Word();
-        word.setWordName(text);
-        mDataSet.add(word);
+        Word wordClass = new Word();
+        wordClass.setWordName(word);
+        mDataSet.add(wordClass);
         adapter.refreshAWordList(mDataSet);
     }
 
