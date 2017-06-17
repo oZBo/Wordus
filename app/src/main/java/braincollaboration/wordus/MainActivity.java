@@ -10,24 +10,34 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.List;
 
 import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.adapter.WordAdapterCallback;
+import braincollaboration.wordus.api.ABBYYLingvoAPI;
+import braincollaboration.wordus.api.Controller;
+import braincollaboration.wordus.api.GetBearerToken;
 import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.IBackgroundCallback;
 import braincollaboration.wordus.background.IBackgroundTask;
 import braincollaboration.wordus.dialog.SearchDialog;
 import braincollaboration.wordus.dialog.SearchDialogCallback;
 import braincollaboration.wordus.model.Word;
+import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.BottomScreenBehavior;
 import braincollaboration.wordus.view.HidingScrollRecyclerViewListener;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -108,6 +118,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         wordsRecycleView.setLayoutManager(mLayoutManager);
         wordsRecycleView.setAdapter(adapter);
         wordsRecycleView.setItemAnimator(itemAnimator);
+
+        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getApi();
+
+        Call<GetBearerToken> myCall = abbyyLingvoAPI.getBearerToken();
+
+        myCall.enqueue(new Callback<GetBearerToken>() {
+            @Override
+            public void onResponse(Call<GetBearerToken> call, Response<GetBearerToken> response) {
+                if (response.isSuccessful()) {
+                    Log.e(Constants.LOG_TAG, response.body().getMessage());
+                    Toast.makeText(MainActivity.this, "not shit " + response.body().getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    Log.e(Constants.LOG_TAG, "shit");
+                    Toast.makeText(MainActivity.this, "shit ", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetBearerToken> call, Throwable t) {
+                Log.e(Constants.LOG_TAG, "fuck: " + t.toString());
+                Toast.makeText(MainActivity.this, "fuck: " + t.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void bottomScreenBehavior() {
@@ -138,16 +171,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (word.compareTo("") != 0) {
             // check db word duplicate task
             BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
-                                             @Override
-                                             public Boolean execute() {
-                                                 SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                                                 Boolean result = false;
-                                                 if (db != null) {
-                                                     result = WordusDatabaseHelper.isDBContainAWord(db, word);
-                                                 }
-                                                 return result;
-                                             }
-                                         },
+                                                                 @Override
+                                                                 public Boolean execute() {
+                                                                     SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                                                                     Boolean result = false;
+                                                                     if (db != null) {
+                                                                         result = WordusDatabaseHelper.isDBContainAWord(db, word);
+                                                                     }
+                                                                     return result;
+                                                                 }
+                                                             },
                     new IBackgroundCallback<Boolean>() {
                         @Override
                         public void doOnSuccess(Boolean result) {
@@ -171,13 +204,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void addInDBFinal(final String word) {
         // add word in db task
         BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
-                                         @Override
-                                         public Boolean execute() {
-                                             SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                                             WordusDatabaseHelper.addInDB(db, word);
-                                             return true;
-                                         }
-                                     },
+                                                             @Override
+                                                             public Boolean execute() {
+                                                                 SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                                                                 WordusDatabaseHelper.addInDB(db, word);
+                                                                 return true;
+                                                             }
+                                                         },
                 new IBackgroundCallback<Boolean>() {
                     @Override
                     public void doOnSuccess(Boolean result) {
