@@ -10,24 +10,34 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.List;
 
 import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.adapter.WordAdapterCallback;
+import braincollaboration.wordus.api.ABBYYLingvoAPI;
+import braincollaboration.wordus.api.Controller;
+import braincollaboration.wordus.api.GetBearerToken;
 import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.IBackgroundCallback;
 import braincollaboration.wordus.background.IBackgroundTask;
 import braincollaboration.wordus.dialog.SearchDialog;
 import braincollaboration.wordus.dialog.SearchDialogCallback;
 import braincollaboration.wordus.model.Word;
+import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.BottomScreenBehavior;
 import braincollaboration.wordus.view.HidingScrollRecyclerViewListener;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -37,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<Word> mDataSet;
     private WordAdapter adapter;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
-    private TextView topText; //TODO please be more informative with view names
-    private TextView bottomText; //TODO please be more informative with view names
+    private TextView topText;
+    private TextView bottomText;
     private WordAdapterCallback wordAdapterCallback;
 
     @Override
@@ -63,13 +73,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void getDataSet() {
         // make dataSet
-        BackgroundManager.getInstance().doBackgroundTask(
-                new IBackgroundTask<List<Word>>() {
-                    @Override
-                    public List<Word> execute() {
-                        return WordusDatabaseHelper.getDataSet(WordusApp.getCurrentActivity().getApplicationContext());
-                    }
-                },
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<List<Word>>() {
+                                                             @Override
+                                                             public List<Word> execute() {
+                                                                 return WordusDatabaseHelper.getDataSet(WordusApp.getCurrentActivity().getApplicationContext());
+                                                             }
+                                                         },
                 new IBackgroundCallback<List<Word>>() {
                     @Override
                     public void doOnSuccess(List<Word> dataSet) {
@@ -81,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Toast.makeText(WordusApp.getCurrentActivity(), R.string.database_unavailable, Toast.LENGTH_SHORT).show();
                     }
                 });
+
     }
 
     private void initRecyclerView(List<Word> dataSet) {
@@ -94,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set white divide line between rv items
         wordsRecycleView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
-        //TODO check why it is deprecated and use new one.
         wordsRecycleView.setOnScrollListener(new HidingScrollRecyclerViewListener() {
             @Override
             public void onHide() {
@@ -109,6 +118,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         wordsRecycleView.setLayoutManager(mLayoutManager);
         wordsRecycleView.setAdapter(adapter);
         wordsRecycleView.setItemAnimator(itemAnimator);
+
+        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getApi();
+
+        Call<GetBearerToken> myCall = abbyyLingvoAPI.getBearerToken();
+
+        myCall.enqueue(new Callback<GetBearerToken>() {
+            @Override
+            public void onResponse(Call<GetBearerToken> call, Response<GetBearerToken> response) {
+                if (response.isSuccessful()) {
+                    Log.e(Constants.LOG_TAG, response.body().getMessage());
+                    Toast.makeText(MainActivity.this, "not shit " + response.body().getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    Log.e(Constants.LOG_TAG, "shit");
+                    Toast.makeText(MainActivity.this, "shit ", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetBearerToken> call, Throwable t) {
+                Log.e(Constants.LOG_TAG, "fuck: " + t.toString());
+                Toast.makeText(MainActivity.this, "fuck: " + t.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void bottomScreenBehavior() {
@@ -138,22 +170,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (word.compareTo("") != 0) {
             // check db word duplicate task
-            BackgroundManager.getInstance().doBackgroundTask(
-                    new IBackgroundTask<Boolean>() {
-                        @Override
-                        public Boolean execute() {
-                            SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                            Boolean result = false;
-                            if (db != null) {
-                                result = WordusDatabaseHelper.isDBContainAWord(db, word);
-                            }
-                            return result;
-                        }
-                    },
+            BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
+                                                                 @Override
+                                                                 public Boolean execute() {
+                                                                     SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                                                                     Boolean result = false;
+                                                                     if (db != null) {
+                                                                         result = WordusDatabaseHelper.isDBContainAWord(db, word);
+                                                                     }
+                                                                     return result;
+                                                                 }
+                                                             },
                     new IBackgroundCallback<Boolean>() {
                         @Override
                         public void doOnSuccess(Boolean result) {
-                            if (!result) { //TODO if false do valid statement? A bit strange...
+                            if (!result) {
                                 addInDBFinal(word);
                             } else {
                                 Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
@@ -172,19 +203,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addInDBFinal(final String word) {
         // add word in db task
-        BackgroundManager.getInstance().doBackgroundTask(
-                new IBackgroundTask<Boolean>() {
-                    @Override
-                    public Boolean execute() {
-                        SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                        WordusDatabaseHelper.addInDB(db, word);
-                        return true;
-                    }
-                },
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
+                                                             @Override
+                                                             public Boolean execute() {
+                                                                 SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                                                                 WordusDatabaseHelper.addInDB(db, word);
+                                                                 return true;
+                                                             }
+                                                         },
                 new IBackgroundCallback<Boolean>() {
                     @Override
                     public void doOnSuccess(Boolean result) {
-                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show(); //TODO to avoid multiple separators use getString(int id, Object... formatArgs)
+                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -194,14 +224,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
         //adding word in RecyclerView
-        //TODO I guess it would be better to add word in RV after it was saved into DB (After callback). Move this into  separate method.
         Word wordClass = new Word();
         wordClass.setWordName(word);
         mDataSet.add(wordClass);
         adapter.refreshAWordList(mDataSet);
     }
 
-    //TODO remove to util class or in adapter
     private String checkIsThisALetters(String text) {
         char[] word = text.toCharArray();
         String upperWord = "";
@@ -233,12 +261,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return mDataSet;
             }
 
-            @Override //TODO rename callbacks name to more understandable
+            @Override
             public void setTopText(String s) {
                 topText.setText(s);
             }
 
-            @Override //TODO rename callbacks name to more understandable
+            @Override
             public void setBottomText(String s) {
                 bottomText.setText(s);
             }
