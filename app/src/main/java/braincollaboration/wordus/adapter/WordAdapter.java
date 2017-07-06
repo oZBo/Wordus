@@ -82,7 +82,10 @@ public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIn
 
     @Override
     public int getPositionForSection(int sectionIndex) {
-        return mSectionPositions.get(sectionIndex);
+        if (sectionIndex != 0) {
+            return mSectionPositions.get(sectionIndex);
+        }
+        return 1;
     }
 
     @Override

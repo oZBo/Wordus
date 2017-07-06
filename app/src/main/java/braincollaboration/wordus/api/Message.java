@@ -3,7 +3,7 @@ package braincollaboration.wordus.api;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GetBearerToken {
+public class Message {
 
     @SerializedName("Message")
     @Expose
