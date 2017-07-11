@@ -23,6 +23,7 @@ import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.adapter.WordAdapterCallback;
 import braincollaboration.wordus.api.ABBYYLingvoAPI;
 import braincollaboration.wordus.api.Controller;
+import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.api.modelSearch.Body;
 import braincollaboration.wordus.api.modelSearch.Item;
 import braincollaboration.wordus.api.modelSearch.Item_;
@@ -142,36 +143,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myCall.enqueue(new Callback<MeaningOfTheWord>() {
             @Override
             public void onResponse(Call<MeaningOfTheWord> call, Response<MeaningOfTheWord> response) {
-                // not usable, just test code
                 if (response.isSuccessful() && response.code() == 200) {
                     Log.e(Constants.LOG_TAG, "search response is success");
 
-                    MeaningOfTheWord mainResponseClass = response.body();
-
-                    List<Item> items = mainResponseClass.getItems();
-                    for (int i = 0; i < items.size(); i++) {
-                        if (items.get(i).getDictionary().equals("Dahl (Ru-Ru)")) {
-                            Log.e(Constants.LOG_TAG, items.get(i).getDictionary());
-
-                            List<Body> bodies = items.get(i).getBody();
-                            List<Markup> markup = bodies.get(0).getMarkup();
-                            for (int b = 0; b < markup.size(); b++) {
-                                Log.e(Constants.LOG_TAG, markup.get(b).getText());
-                            }
-                        } else if (items.get(i).getDictionary().equals("Explanatory (Ru-Ru)")) {
-                            Log.e(Constants.LOG_TAG, items.get(i).getDictionary());
-
-                            List<Item_> items_ = items.get(i).getBody().get(0).getItems();
-                            for (int b = 0; b < items_.size(); b++) {
-                                List<Markup_> markup_ = items_.get(b).getMarkup();
-                                for (int c = 0; c < markup_.size(); c++) {
-                                    if (markup_.get(c).getItems() == null) {
-                                        List<Markup__> markup__ = markup_.get(c).getMarkup();
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    new JsonResponseNodeTypeDecryption<Response>(response);
+                    Log.e(Constants.LOG_TAG, JsonResponseNodeTypeDecryption.wordMeaning.toString());
                 } else {
                     Log.e(Constants.LOG_TAG, "search response isn't successful");
                 }

@@ -4,6 +4,14 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import braincollaboration.wordus.utils.Constants;
 import okhttp3.Authenticator;
@@ -19,8 +27,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Controller {
     private static String accessToken = null;
-    private static Boolean tokenExpired;
-    private static OkHttpClient.Builder okHttpBuilder;
     private static Request accessTokenRequest;
     private static ABBYYLingvoAPI apiInterfaceInstance;
 
@@ -32,12 +38,11 @@ public class Controller {
     }
 
     private static ABBYYLingvoAPI getApi() {
-        initializeRetrofitClients();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpBuilder.build())
+                .client(initializeRetrofitClients())
                 .build();
 
         return retrofit.create(ABBYYLingvoAPI.class);
@@ -48,8 +53,8 @@ public class Controller {
      * a) One for the initial authentication end point
      * b) Other for other service requests
      */
-    private static void initializeRetrofitClients() {
-        okHttpBuilder = new OkHttpClient().newBuilder();
+    private static OkHttpClient initializeRetrofitClients() {
+        OkHttpClient.Builder okHttpBuilder = new OkHttpClient().newBuilder();
         okHttpBuilder.interceptors().add(new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -87,7 +92,7 @@ public class Controller {
                         Log.e(Constants.LOG_TAG, "basic response isn't successful");
                     }
                 } catch (IOException e) {
-                    Log.e(Constants.LOG_TAG, "basic response isn't successful");
+                    Log.e(Constants.LOG_TAG, "basic response isn't successful cause error " + e.toString());
                 }
 
                 // Add new header to rejected request and retry it
@@ -99,72 +104,44 @@ public class Controller {
             }
         });
 
-//        OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
-//        OkHttpClient clientNormal;
-//        OkHttpClient clientAuthenticated;
-//        builder.interceptors().add(new Interceptor() {
-//            @Override
-//            public okhttp3.Response intercept(Chain chain) throws IOException {
-//                Request originalRequest = chain.request();
-//                Request.Builder builder = originalRequest.newBuilder().header("Authorization: Bearer ", accessToken).
-//                        method(originalRequest.method(), originalRequest.body());
-//                okhttp3.Response response = chain.proceed(builder.build());
-//                /**
-//                 implies that the token has expired
-//                 or was never initialized
-//                 */
-//                if (response.code() == 401) {
-//                    tokenExpired = true;
-//                    logger.info("Token Expired");
-//                    getAuthenticationToken();
-//                    builder = originalRequest.newBuilder().header("Authorization: Bearer ", accessToken).
-//                            method(originalRequest.method(), originalRequest.body());
-//                    response = chain.proceed(builder.build());
-//                }
-//                return response;
-//            }
-//        });
-//        clientAuthenticated = builder.build();
-//        retrofitAuthenticated = new Retrofit.Builder().client(clientAuthenticated)
-//                .baseUrl(API_ENDPOINT)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//
-//        OkHttpClient.Builder builder1 = new OkHttpClient().newBuilder();
-//        builder1.authenticator(new Authenticator() {
-//            @Override
-//            public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-//                String authentication = Credentials.basic(CLIENT_ID, CLIENT_SECRET);
-//                Request.Builder builder = response.request().newBuilder().addHeader("Authorization", authentication);
-//                return builder.build();
-//            }
-//        });
-//        clientNormal = builder1.build();
-//        retrofit = new Retrofit.Builder().client(clientNormal).
-//                baseUrl(API_ENDPOINT).
-//                addConverterFactory(GsonConverterFactory.create()).build();
-//    }
-//
-//    /**
-//     * Is invoked only when the access token is required
-//     * Or it expires
-//     */
-//    private void getAuthenticationToken() {
-//        ABBYYLingvoAPI abbyyLingvoAPI = getApi();
-//
-//        Call<ResponseBody> myCall = abbyyLingvoAPI.getBasicToken();
-//        Response<ResponseBody> response = null;
-//        try {
-//            response = myCall.execute();
-//            if (response.isSuccessful()) {
-//                accessToken = response.body().string();
-//                Log.e(Constants.LOG_TAG, "basic response is success");
-//            } else {
-//                Log.e(Constants.LOG_TAG, "basic response isn't successful");
-//            }
-//        } catch (IOException e) {
-//            Log.e(Constants.LOG_TAG, "basic response isn't successful");
-//        }
+        try {
+            // Create a trust manager that does not validate certificate chains
+            final TrustManager[] trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[]{};
+                        }
+                    }
+            };
+
+            // Install the all-trusting trust manager
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            okHttpBuilder.sslSocketFactory(sslSocketFactory);
+            okHttpBuilder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            OkHttpClient okHttpClient = okHttpBuilder.build();
+            return okHttpClient;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static boolean alreadyHasAuthorizationHeader(Request originalRequest) {
