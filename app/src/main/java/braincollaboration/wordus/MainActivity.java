@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.List;
 
 import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
@@ -24,7 +23,14 @@ import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.adapter.WordAdapterCallback;
 import braincollaboration.wordus.api.ABBYYLingvoAPI;
 import braincollaboration.wordus.api.Controller;
-import braincollaboration.wordus.api.GetBearerToken;
+import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
+import braincollaboration.wordus.api.modelSearch.Body;
+import braincollaboration.wordus.api.modelSearch.Item;
+import braincollaboration.wordus.api.modelSearch.Item_;
+import braincollaboration.wordus.api.modelSearch.Markup;
+import braincollaboration.wordus.api.modelSearch.Markup_;
+import braincollaboration.wordus.api.modelSearch.Markup__;
+import braincollaboration.wordus.api.modelSearch.MeaningOfTheWord;
 import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.IBackgroundCallback;
 import braincollaboration.wordus.background.IBackgroundTask;
@@ -34,7 +40,6 @@ import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.BottomScreenBehavior;
 import braincollaboration.wordus.view.HidingScrollRecyclerViewListener;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<Word> mDataSet;
     private WordAdapter adapter;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
-    private TextView topText;
-    private TextView bottomText;
+    private TextView topText; //TODO please be more informative with view names
+    private TextView bottomText; //TODO please be more informative with view names
     private WordAdapterCallback wordAdapterCallback;
 
     @Override
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initWidgets();
         getDataSet();
         bottomScreenBehavior();
+        initRetrofit();
     }
 
     private void initWidgets() {
@@ -73,12 +79,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void getDataSet() {
         // make dataSet
-        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<List<Word>>() {
-                                                             @Override
-                                                             public List<Word> execute() {
-                                                                 return WordusDatabaseHelper.getDataSet(WordusApp.getCurrentActivity().getApplicationContext());
-                                                             }
-                                                         },
+        BackgroundManager.getInstance().doBackgroundTask(
+                new IBackgroundTask<List<Word>>() {
+                    @Override
+                    public List<Word> execute() {
+                        return WordusDatabaseHelper.getDataSet(WordusApp.getCurrentActivity().getApplicationContext());
+                    }
+                },
                 new IBackgroundCallback<List<Word>>() {
                     @Override
                     public void doOnSuccess(List<Word> dataSet) {
@@ -104,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set white divide line between rv items
         wordsRecycleView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
+        //TODO check why it is deprecated and use new one.
         wordsRecycleView.setOnScrollListener(new HidingScrollRecyclerViewListener() {
             @Override
             public void onHide() {
@@ -118,29 +126,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         wordsRecycleView.setLayoutManager(mLayoutManager);
         wordsRecycleView.setAdapter(adapter);
         wordsRecycleView.setItemAnimator(itemAnimator);
-
-        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getApi();
-
-        Call<GetBearerToken> myCall = abbyyLingvoAPI.getBearerToken();
-
-        myCall.enqueue(new Callback<GetBearerToken>() {
-            @Override
-            public void onResponse(Call<GetBearerToken> call, Response<GetBearerToken> response) {
-                if (response.isSuccessful()) {
-                    Log.e(Constants.LOG_TAG, response.body().getMessage());
-                    Toast.makeText(MainActivity.this, "not shit " + response.body().getMessage(), Toast.LENGTH_LONG).show();
-                } else {
-                    Log.e(Constants.LOG_TAG, "shit");
-                    Toast.makeText(MainActivity.this, "shit ", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GetBearerToken> call, Throwable t) {
-                Log.e(Constants.LOG_TAG, "fuck: " + t.toString());
-                Toast.makeText(MainActivity.this, "fuck: " + t.toString(), Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     private void bottomScreenBehavior() {
@@ -148,6 +133,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         bottomSheetBehavior.setBottomSheetCallback(new BottomScreenBehavior(fab));
+    }
+
+    private void initRetrofit() {
+        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
+
+        Call<MeaningOfTheWord> myCall = abbyyLingvoAPI.getWordMeaning();
+
+        myCall.enqueue(new Callback<MeaningOfTheWord>() {
+            @Override
+            public void onResponse(Call<MeaningOfTheWord> call, Response<MeaningOfTheWord> response) {
+                if (response.isSuccessful() && response.code() == 200) {
+                    Log.e(Constants.LOG_TAG, "search response is success");
+
+                    new JsonResponseNodeTypeDecryption<Response>(response);
+                    Log.e(Constants.LOG_TAG, JsonResponseNodeTypeDecryption.wordMeaning.toString());
+                } else {
+                    Log.e(Constants.LOG_TAG, "search response isn't successful");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MeaningOfTheWord> call, Throwable t) {
+                Log.e(Constants.LOG_TAG, "search response failure error " + t.toString());
+            }
+        });
     }
 
     @Override
@@ -170,21 +180,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (word.compareTo("") != 0) {
             // check db word duplicate task
-            BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
-                                                                 @Override
-                                                                 public Boolean execute() {
-                                                                     SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                                                                     Boolean result = false;
-                                                                     if (db != null) {
-                                                                         result = WordusDatabaseHelper.isDBContainAWord(db, word);
-                                                                     }
-                                                                     return result;
-                                                                 }
-                                                             },
+            BackgroundManager.getInstance().doBackgroundTask(
+                    new IBackgroundTask<Boolean>() {
+                        @Override
+                        public Boolean execute() {
+                            SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                            Boolean result = false;
+                            if (db != null) {
+                                result = WordusDatabaseHelper.isDBContainAWord(db, word);
+                            }
+                            return result;
+                        }
+                    },
                     new IBackgroundCallback<Boolean>() {
                         @Override
                         public void doOnSuccess(Boolean result) {
-                            if (!result) {
+                            if (!result) { //TODO if false do valid statement? A bit strange...
                                 addInDBFinal(word);
                             } else {
                                 Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
@@ -224,12 +235,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
         //adding word in RecyclerView
+        //TODO I guess it would be better to add word in RV after it was saved into DB (After callback). Move this into  separate method.
         Word wordClass = new Word();
         wordClass.setWordName(word);
         mDataSet.add(wordClass);
         adapter.refreshAWordList(mDataSet);
     }
 
+    //TODO remove to util class or in adapter
     private String checkIsThisALetters(String text) {
         char[] word = text.toCharArray();
         String upperWord = "";
@@ -261,12 +274,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return mDataSet;
             }
 
-            @Override
+            @Override //TODO rename callbacks name to more understandable
             public void setTopText(String s) {
                 topText.setText(s);
             }
 
-            @Override
+            @Override //TODO rename callbacks name to more understandable
             public void setBottomText(String s) {
                 bottomText.setText(s);
             }
