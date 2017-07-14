@@ -122,8 +122,8 @@ public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIn
 
         @Override
         public void onClick(View v) {
-            wordAdapterCallback.setTopText(word.getWordName());
-            wordAdapterCallback.setBottomText(word.getWordDescription());
+            wordAdapterCallback.setTopTextOfTheBottomSheet(word.getWordName());
+            wordAdapterCallback.setBottomTextOfTheBottomSheet(word.getWordDescription());
             wordAdapterCallback.changeBottomSheetBehaviorForExpanded();
 
         }

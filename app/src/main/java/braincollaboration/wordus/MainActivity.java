@@ -28,6 +28,7 @@ import braincollaboration.wordus.dialog.SearchDialog;
 import braincollaboration.wordus.dialog.SearchDialogCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
+import braincollaboration.wordus.utils.CheckForLetters;
 import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.BottomScreenBehavior;
 import braincollaboration.wordus.view.HidingScrollRecyclerViewListener;
@@ -43,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<Word> mDataSet;
     private WordAdapter adapter;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
-    private TextView topText; //TODO please be more informative with view names
-    private TextView bottomText; //TODO please be more informative with view names
+    private TextView topTextOfTheBottomSheet;
+    private TextView bottomTextOfTheBottomSheet;
     private WordAdapterCallback wordAdapterCallback;
 
     @Override
@@ -62,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab.setOnClickListener(this);
         wordsRecycleView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        topText = (TextView) findViewById(R.id.bottom_sheet_top_text);
-        bottomText = (TextView) findViewById(R.id.bottom_sheet_bottom_text);
+        topTextOfTheBottomSheet = (TextView) findViewById(R.id.bottom_sheet_top_text);
+        bottomTextOfTheBottomSheet = (TextView) findViewById(R.id.bottom_sheet_bottom_text);
 
         initAdapterCallback();
     }
@@ -88,8 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //set white divide line between rv items
         wordsRecycleView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
-        //TODO check why it is deprecated and use new one.
-        wordsRecycleView.setOnScrollListener(new HidingScrollRecyclerViewListener() {
+        wordsRecycleView.addOnScrollListener(new HidingScrollRecyclerViewListener() {
             @Override
             public void onHide() {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void findAWord(Editable text) {
                 if (!text.toString().equals("")) {
-                    addWord(checkIsThisALetters(text.toString()));
+                    addWord(CheckForLetters.checkIsThisALetters(text.toString()));
                 } else {
                     Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
                 }
@@ -153,21 +153,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addWord(final String word) {
-        if (word.compareTo("") != 0) {
-            DatabaseManager.getInstance().addWordInDB(word, new DefaultBackgroundCallback<Boolean>() {
-                @Override
-                public void doOnSuccess(Boolean result) {
-                    if (result) {
-                        addWordToListView(word);
-                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
-                    }
+        DatabaseManager.getInstance().addWordInDB(word, new DefaultBackgroundCallback<Boolean>() {
+            @Override
+            public void doOnSuccess(Boolean result) {
+                if (result) {
+                    addWordToListView(word);
+                    Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
                 }
-            });
-        } else {
-            Toast.makeText(WordusApp.getCurrentActivity(), R.string.empty_word_error, Toast.LENGTH_SHORT).show();
-        }
+            }
+        });
     }
 
     private void addWordToListView(String word) {
@@ -175,29 +171,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         wordClass.setWordName(word);
         mDataSet.add(wordClass);
         adapter.refreshAWordList(mDataSet);
-    }
-
-    //TODO remove to util class or in adapter
-    private String checkIsThisALetters(String text) {
-        char[] word = text.toCharArray();
-        String upperWord = "";
-        int notLetters = 0;
-        // checks is a target word consist of letters
-        for (char aWord : word) {
-            if (!Character.isLetter(aWord)) {
-                notLetters++;
-            }
-        }
-
-        // makes first letter in to upper case
-        if (notLetters == 0) {
-            word[0] = Character.toUpperCase(word[0]);
-
-            for (char aWord : word) {
-                upperWord += Character.toString(aWord);
-            }
-        }
-        return upperWord;
     }
 
     private void initAdapterCallback() {
@@ -209,14 +182,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return mDataSet;
             }
 
-            @Override //TODO rename callbacks name to more understandable
-            public void setTopText(String s) {
-                topText.setText(s);
+            public void setTopTextOfTheBottomSheet(String s) {
+                topTextOfTheBottomSheet.setText(s);
             }
 
-            @Override //TODO rename callbacks name to more understandable
-            public void setBottomText(String s) {
-                bottomText.setText(s);
+            public void setBottomTextOfTheBottomSheet(String s) {
+                bottomTextOfTheBottomSheet.setText(s);
             }
 
             @Override
