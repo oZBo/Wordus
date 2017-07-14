@@ -8,9 +8,9 @@ public interface WordAdapterCallback {
 
     List<Word> deleteWordItem (Word word);
 
-    void setTopText (String s);
+    void setTopTextOfTheBottomSheet (String s);
 
-    void setBottomText (String s);
+    void setBottomTextOfTheBottomSheet (String s);
 
     void changeBottomSheetBehaviorForExpanded();
 

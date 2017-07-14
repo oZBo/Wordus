@@ -16,7 +16,7 @@ import braincollaboration.wordus.model.Word;
  * Created by evhenii on 13.07.17.
  */
 
-public class DatabaseManager {
+public class  DatabaseManager {
 
     private static final DatabaseManager ourInstance = new DatabaseManager();
 
@@ -42,7 +42,7 @@ public class DatabaseManager {
             @Override
             public Boolean execute() {
                 SQLiteDatabase readableDB = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                if (readableDB != null && WordusDatabaseHelper.isDBContainAWord(readableDB, word)) {
+                if (readableDB != null && !WordusDatabaseHelper.isDBContainAWord(readableDB, word)) {
                     SQLiteDatabase writableDB = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
                     WordusDatabaseHelper.addInDB(writableDB, word);
                     return true;
