@@ -15,5 +15,5 @@ public interface ABBYYLingvoAPI {
     Call<ResponseBody> getBasicToken();
 
     @GET("/api/v1/Search?text=картина&srcLang=1049&dstLang=1049&searchZone=1&startIndex=0&pageSize=2")
-    Call<MeaningOfTheWord> getWordMeaning ();
+    Call<ResponseBody> getWordMeaning ();
 }

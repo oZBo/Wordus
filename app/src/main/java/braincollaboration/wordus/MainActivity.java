@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.List;
 
 import braincollaboration.wordus.adapter.WordAdapter;
@@ -32,6 +33,7 @@ import braincollaboration.wordus.utils.CheckForLetters;
 import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.BottomScreenBehavior;
 import braincollaboration.wordus.view.HidingScrollRecyclerViewListener;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -113,29 +115,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initRetrofit() {
-        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
-
-        Call<MeaningOfTheWord> myCall = abbyyLingvoAPI.getWordMeaning();
-
-        myCall.enqueue(new Callback<MeaningOfTheWord>() {
-            @Override
-            public void onResponse(Call<MeaningOfTheWord> call, Response<MeaningOfTheWord> response) {
-                if (response.isSuccessful() && response.code() == 200) {
-                    Log.e(Constants.LOG_TAG, "search response is success");
-
-                    new JsonResponseNodeTypeDecryption<Response>(response);
-                    Log.e(Constants.LOG_TAG, JsonResponseNodeTypeDecryption.wordMeaning.toString());
-                } else {
-                    Log.e(Constants.LOG_TAG, "search response isn't successful");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MeaningOfTheWord> call, Throwable t) {
-                Log.e(Constants.LOG_TAG, "search response failure error " + t.toString());
-            }
-        });
+        new JsonResponseNodeTypeDecryption().parse(Constants.RESPONSE);
     }
+
+//    private void initRetrofit() {
+//        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
+//
+//        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning();
+//
+//        myCall.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                if (response.isSuccessful() && response.code() == 200) {
+//                    Log.e(Constants.LOG_TAG, "search response is success");
+//
+//                    try {
+//                        new JsonResponseNodeTypeDecryption().parse(response.body().string());
+//                    } catch (IOException e) {
+//                        Log.e(Constants.LOG_TAG, "search RAW response error: " + e.toString());
+//                    }
+//
+////                    new JsonResponseNodeTypeDecryption<Response>(response);
+////                    Log.e(Constants.LOG_TAG, JsonResponseNodeTypeDecryption.wordMeaning.toString());
+//                } else {
+//                    Log.e(Constants.LOG_TAG, "search response isn't successful");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
+//            }
+//        });
+//    }
 
     @Override
     public void onClick(View v) {
