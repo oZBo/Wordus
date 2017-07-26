@@ -2,8 +2,6 @@ package braincollaboration.wordus.adapter;
 
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.support.annotation.LayoutRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -16,18 +14,14 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
-import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
-import braincollaboration.wordus.WordusApp;
-import braincollaboration.wordus.background.BackgroundManager;
-import braincollaboration.wordus.background.IBackgroundCallback;
-import braincollaboration.wordus.background.IBackgroundTask;
+import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.dialog.DeleteDialog;
 import braincollaboration.wordus.dialog.DeleteDialogCallback;
+import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
 
 public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIndexer {
@@ -141,25 +135,12 @@ public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIn
             DeleteDialog deleteDialog = new DeleteDialog(context, new DeleteDialogCallback() {
                 @Override
                 public void delete() {
-                    BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
-                                                                         @Override
-                                                                         public Boolean execute() {
-                                                                             SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                                                                             WordusDatabaseHelper.deleteWord(db, word.getWordName());
-                                                                             return true;
-                                                                         }
-                                                                     },
-                            new IBackgroundCallback<Boolean>() {
-                                @Override
-                                public void doOnSuccess(Boolean result) {
-                                    Toast.makeText(context, WordusApp.getCurrentActivity().getApplicationContext().getString(R.string.word_) + " " + word.getWordName() + " " + WordusApp.getCurrentActivity().getApplicationContext().getString(R.string._successfully_deleteed_from_db), Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void doOnError(Exception e) {
-                                    Toast.makeText(context, R.string.database_unavailable, Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                    DatabaseManager.getInstance().deleteWord(word, new DefaultBackgroundCallback<Void>() {
+                        @Override
+                        public void doOnSuccess(Void result) {
+                            Toast.makeText(context, context.getString(R.string.word_) + " " + word.getWordName() + " " + context.getString(R.string._successfully_deleteed_from_db), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
                     // delete from rv
                     List<Word> dataSet = wordAdapterCallback.deleteWordItem(word);
