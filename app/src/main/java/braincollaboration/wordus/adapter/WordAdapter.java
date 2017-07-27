@@ -40,7 +40,7 @@ public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIn
     }
 
     @Override
-    public void onBindItemViewHolder(RecyclerView.ViewHolder holder, Word item, @ViewType int viewType) {
+    public void onBindItemViewHolder(RecyclerView.ViewHolder holder, final Word item, @ViewType int viewType) {
 
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.wordName.setText(item.getWordName());
@@ -51,7 +51,29 @@ public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIn
         }
 
         viewHolder.onItemClick.setWord(item);
-        viewHolder.onDeleteButtonCLick.setWord(item);
+        viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DeleteDialog deleteDialog = new DeleteDialog(context, new DeleteDialogCallback() {
+                    @Override
+                    public void delete() {
+                        DatabaseManager.getInstance().deleteWord(item, new DefaultBackgroundCallback<Void>() {
+                            @Override
+                            public void doOnSuccess(Void result) {
+                                Toast.makeText(context, context.getString(R.string.word_) + " " + item.getWordName() + " " + context.getString(R.string._successfully_deleteed_from_db), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        // delete from rv
+                        List<Word> dataSet = wordAdapterCallback.deleteWordItem(item);
+                        if (dataSet != null) {
+                            refreshAWordList(dataSet);
+                        }
+                    }
+                });
+                deleteDialog.showDialog();
+            }
+        });
     }
 
     @Override
@@ -92,21 +114,17 @@ public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIn
         Button deleteButton;
         RelativeLayout relativeLayout;
         OnItemClickListener onItemClick;
-        OnDeleteButtonClickListener onDeleteButtonCLick;
 
         ViewHolder(View itemView) {
             super(itemView);
 
             onItemClick = new OnItemClickListener();
-            onDeleteButtonCLick = new OnDeleteButtonClickListener();
 
             wordName = (TextView) itemView.findViewById(R.id.recycler_item_headline_text);
             deleteButton = (Button) itemView.findViewById(R.id.recyclerViewItemDeleteButton);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.recycler_item_relativeLayout);
 
-            //deleteButton.setVisibility(Button.GONE);
-
-            deleteButton.setOnClickListener(onDeleteButtonCLick);
+            itemView.setOnClickListener(new OnItemClickListener());
             itemView.setOnClickListener(onItemClick);
         }
     }
@@ -122,37 +140,7 @@ public class WordAdapter extends SectionedAdapterBase<Word> implements SectionIn
 
         }
 
-        public void setWord(Word word) {
-            this.word = word;
-        }
-    }
-
-    private class OnDeleteButtonClickListener implements View.OnClickListener {
-        private Word word;
-
-        @Override
-        public void onClick(View v) {
-            DeleteDialog deleteDialog = new DeleteDialog(context, new DeleteDialogCallback() {
-                @Override
-                public void delete() {
-                    DatabaseManager.getInstance().deleteWord(word, new DefaultBackgroundCallback<Void>() {
-                        @Override
-                        public void doOnSuccess(Void result) {
-                            Toast.makeText(context, context.getString(R.string.word_) + " " + word.getWordName() + " " + context.getString(R.string._successfully_deleteed_from_db), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    // delete from rv
-                    List<Word> dataSet = wordAdapterCallback.deleteWordItem(word);
-                    if (dataSet != null) {
-                        refreshAWordList(dataSet);
-                    }
-                }
-            });
-            deleteDialog.showDialog();
-        }
-
-        public void setWord(Word word) {
+        void setWord(Word word) {
             this.word = word;
         }
     }

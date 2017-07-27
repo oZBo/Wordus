@@ -23,7 +23,6 @@ import braincollaboration.wordus.adapter.WordAdapterCallback;
 import braincollaboration.wordus.api.ABBYYLingvoAPI;
 import braincollaboration.wordus.api.Controller;
 import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
-import braincollaboration.wordus.api.modelSearch.MeaningOfTheWord;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.dialog.SearchDialog;
 import braincollaboration.wordus.dialog.SearchDialogCallback;
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initRetrofit() {
-        new JsonResponseNodeTypeDecryption().parse(Constants.RESPONSE);
+        new JsonResponseNodeTypeDecryption().parse(Constants.RESPONSE_PICTURE);
     }
 
 //    private void initRetrofit() {
