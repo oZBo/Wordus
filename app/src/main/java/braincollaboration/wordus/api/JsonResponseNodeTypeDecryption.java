@@ -17,30 +17,43 @@ public class JsonResponseNodeTypeDecryption {
 
     public static ArrayList<String> wordMeaningDahl = new ArrayList<>();
     public static ArrayList<String> wordMeaningExplanatory = new ArrayList<>();
+    private Iterator<Map.Entry<String, JsonNode>> fieldsIterator;
+    private ArrayList <String> listOfMainItems = new ArrayList<>();
 
     public void parse(String json) {
-        JsonFactory factory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(factory);
-
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(json);
-        } catch (IOException e) {
-            Log.e(Constants.LOG_TAG, "JsonRootNode response parse error: " + e.toString());
-        }
-
-        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
-
-        while (fieldsIterator.hasNext()) {
-            Map.Entry<String, JsonNode> field = fieldsIterator.next();
-            Log.e(Constants.LOG_TAG, "Key: " + field.getKey() + "\tValue: " + field.getValue());
-            if (field.getKey().equals("Items")) {
-                isItJsonArrayList(field.getValue().toString());
+        fieldsIterator = jsonNode(json);
+        String jsonArray = findJsonValue("Items", null);
+        listOfMainItems = isItJsonArrayList(jsonArray);
+        if (!listOfMainItems.isEmpty()) {
+            for (String jsonClass : listOfMainItems) {
+                Log.e(Constants.LOG_TAG, jsonClass);
+                fieldsIterator = jsonNode(jsonClass);
+                if (findJsonValue("Dictionary", null).equals("Dahl (Ru-Ru)")) {
+                    String dahlString = findJsonValue("Body", null);
+                } else if (findJsonValue("Dictionary", null).equals("Explanatory (Ru-Ru)")) {
+                    String explanString = findJsonValue("Body", null);
+                }
             }
         }
     }
 
-    private void isItJsonArrayList(String s) {
+    private String findJsonValue(String key, String value) {
+        String valueString = null;
+        while (fieldsIterator != null && fieldsIterator.hasNext()) {
+
+            Map.Entry<String, JsonNode> field = fieldsIterator.next();
+            Log.e(Constants.LOG_TAG, "Key: " + field.getKey() + "\tValue: " + field.getValue());
+
+            if ((key != null && value == null) && field.getKey().equals(key)) {
+                valueString = field.getValue().toString();
+            } else if ((key == null && value != null) && field.getValue().toString().equals(value)) {
+                valueString = field.getKey();
+            }
+        }
+        return valueString;
+    }
+
+    private ArrayList<String> isItJsonArrayList(String s) {
         ArrayList<String> arrayList = new ArrayList<>();
         int oneArrayInt = 0;
         String oneArrayString = "";
@@ -64,12 +77,20 @@ public class JsonResponseNodeTypeDecryption {
             }
         }
 
+        return arrayList;
+    }
 
-        if (!arrayList.isEmpty()) {
-            for (String jsonClass : arrayList) {
-                Log.e(Constants.LOG_TAG, jsonClass);
-                new JsonResponseNodeTypeDecryption().parse(jsonClass);
-            }
+    private Iterator<Map.Entry<String, JsonNode>> jsonNode(String s) {
+        JsonFactory factory = new JsonFactory();
+        ObjectMapper mapper = new ObjectMapper(factory);
+
+        JsonNode rootNode = null;
+        try {
+            rootNode = mapper.readTree(s);
+        } catch (IOException e) {
+            Log.e(Constants.LOG_TAG, "JsonRootNode response parse error: " + e.toString());
         }
+
+        return rootNode != null ? rootNode.fields() : null;
     }
 }
