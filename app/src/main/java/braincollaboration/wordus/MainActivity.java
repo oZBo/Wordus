@@ -65,14 +65,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
         adapter = new WordAdapter(this, R.layout.header_separator, DebugWordListUtil.getStubWordList(), this);
-
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
-
         wordsRecycleView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        wordsRecycleView.setLayoutManager(mLayoutManager);
+        wordsRecycleView.setLayoutManager(new LinearLayoutManager(this));
+        wordsRecycleView.setItemAnimator(new DefaultItemAnimator());
         wordsRecycleView.setAdapter(adapter);
-        wordsRecycleView.setItemAnimator(itemAnimator);
     }
 
     private void bottomScreenBehavior() {
