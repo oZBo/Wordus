@@ -16,7 +16,7 @@
         android:gravity="center"
         android:textAllCaps="true"
         android:textColor="@color/almostBlackTextColor"
-        android:textSize="22sp"
+        android:textSize="@dimen/default_title_text_size"
         android:textStyle="bold"
         tools:text="Header" />
 

@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
@@ -28,7 +29,7 @@ import braincollaboration.wordus.utils.DebugWordListUtil;
 import braincollaboration.wordus.view.BottomScreenBehavior;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {
 
     private RecyclerView wordsRecycleView;
     private FloatingActionButton fab;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
-        adapter = new WordAdapter(this, R.layout.header_separator, DebugWordListUtil.getStubWordList());
+        adapter = new WordAdapter(this, R.layout.header_separator, DebugWordListUtil.getStubWordList(), this);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
@@ -118,5 +119,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         wordClass.setWordName(word);
         mDataSet.add(wordClass);
         adapter.refreshAWordList(mDataSet);
+    }
+
+    @Override
+    public void onItemClicked(Word word) {
+        Toast.makeText(this, word.getWordName() + " clicked", Toast.LENGTH_SHORT).show();
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    @Override
+    public void onItemDeleteButtonClicked(Word word) {
+        Toast.makeText(this, word.getWordName() + " deleted", Toast.LENGTH_SHORT).show();
+        DatabaseManager.getInstance().deleteWord(word);
     }
 }
