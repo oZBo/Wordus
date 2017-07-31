@@ -18,8 +18,6 @@ public class BottomScreenBehavior extends BottomSheetBehavior.BottomSheetCallbac
     public void onStateChanged(@NonNull View bottomSheet, int newState) {
         if (BottomSheetBehavior.STATE_EXPANDED == newState) {
             floatingActionButton.setVisibility(View.GONE);
-        } else if (BottomSheetBehavior.STATE_HIDDEN == newState) {
-            floatingActionButton.setVisibility(View.GONE);
         } else {
             floatingActionButton.setVisibility(View.VISIBLE);
         }

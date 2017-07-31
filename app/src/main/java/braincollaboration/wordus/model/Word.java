@@ -3,7 +3,7 @@ package braincollaboration.wordus.model;
 
 import braincollaboration.wordus.adapter.Categorizable;
 
-public class Word implements Categorizable{
+public class Word implements Categorizable {
 
     private String name;
     private String description;
