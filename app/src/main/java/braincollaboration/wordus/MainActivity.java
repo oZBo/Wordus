@@ -71,6 +71,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         wordsRecycleView.setAdapter(adapter);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void bottomScreenBehavior() {
         LinearLayout llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
