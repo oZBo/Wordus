@@ -16,7 +16,7 @@ import braincollaboration.wordus.model.Word;
  * Created by evhenii on 13.07.17.
  */
 
-public class  DatabaseManager {
+public class DatabaseManager {
 
     private static final DatabaseManager ourInstance = new DatabaseManager();
 
@@ -53,8 +53,12 @@ public class  DatabaseManager {
         BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);
     }
 
-    public void deleteWord(final Word word, DefaultBackgroundCallback<Void> callback){
-        IBackgroundTask<Void> backgroundTask = new IBackgroundTask<Void>(){
+    public void deleteWord(final Word word) {
+        this.deleteWord(word, null);
+    }
+
+    public void deleteWord(final Word word, DefaultBackgroundCallback<Void> callback) {
+        IBackgroundTask<Void> backgroundTask = new IBackgroundTask<Void>() {
             @Override
             public Void execute() {
                 SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());

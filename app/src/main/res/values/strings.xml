@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Wordus</string>
     <string name="bottom_sheet_peek">Bottom Sheet Peek</string>
-    <string name="bottom_sheet_content">Bottom Sheet Content</string>
+    <string name="bottom_sheet_content">Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content Bottom Sheet Content </string>
     <string name="search_dialog_intype">Введите слово:</string>
     <string name="empty_word_error">Введите слово!</string>
     <string name="word_already_contains_in_db">This word already exists</string>
