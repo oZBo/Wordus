@@ -1,6 +1,5 @@
 package braincollaboration.wordus.api;
 
-import braincollaboration.wordus.api.modelSearch.MeaningOfTheWord;
 import braincollaboration.wordus.utils.Constants;
 import okhttp3.ResponseBody;
 import retrofit2.Call;

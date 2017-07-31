@@ -7,6 +7,7 @@ import android.view.View;
 
 
 public class BottomScreenBehavior extends BottomSheetBehavior.BottomSheetCallback {
+
     private FloatingActionButton fab;
 
     public BottomScreenBehavior(FloatingActionButton fab) {
