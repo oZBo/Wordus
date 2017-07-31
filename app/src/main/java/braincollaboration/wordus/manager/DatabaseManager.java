@@ -41,13 +41,11 @@ public class DatabaseManager {
         IBackgroundTask<Boolean> backgroundTask = new IBackgroundTask<Boolean>() {
             @Override
             public Boolean execute() {
-                SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                if (db != null && !WordusDatabaseHelper.isDBContainAWord(db, word)) {
-                    db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                    if (db != null) {
-                        WordusDatabaseHelper.addInDB(db, word);
-                        return true;
-                    }
+                SQLiteDatabase readableDB = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                if (readableDB != null && !WordusDatabaseHelper.isDBContainAWord(readableDB, word)) {
+                    SQLiteDatabase writableDB = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                    WordusDatabaseHelper.addInDB(writableDB, word);
+                    return true;
                 }
                 return false;
             }
@@ -55,14 +53,16 @@ public class DatabaseManager {
         BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);
     }
 
+    public void deleteWord(final Word word) {
+        this.deleteWord(word, null);
+    }
+
     public void deleteWord(final Word word, DefaultBackgroundCallback<Void> callback) {
         IBackgroundTask<Void> backgroundTask = new IBackgroundTask<Void>() {
             @Override
             public Void execute() {
                 SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                if (db != null) {
-                    WordusDatabaseHelper.deleteWord(db, word.getWordName());
-                }
+                WordusDatabaseHelper.deleteWord(db, word.getWordName());
                 return null;
             }
         };

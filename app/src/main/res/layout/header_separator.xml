@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="@dimen/recycler_view_header_separator_height"
     android:background="@color/separatorColor"
     android:gravity="center"
     android:orientation="vertical">
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:gravity="start"
+        android:gravity="center"
         android:textAllCaps="true"
         android:textColor="@color/almostBlackTextColor"
         android:textSize="22sp"

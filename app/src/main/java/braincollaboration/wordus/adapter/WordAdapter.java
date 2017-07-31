@@ -3,7 +3,6 @@ package braincollaboration.wordus.adapter;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
+import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
 
 public class WordAdapter extends SectionedAdapterBase<Word> {
@@ -39,19 +39,13 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     }
 
     @Override
-    public void onBindItemViewHolder(RecyclerView.ViewHolder holder, Word item, @ViewType int viewType) {
-
+    public void onBindItemViewHolder(RecyclerView.ViewHolder holder, final Word item, @ViewType int viewType) {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.wordName.setText(item.getWordName());
-
-        if (item.getWordDescription() == null) {
-            viewHolder.relativeLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.unFoundDescriptionColor));
-        }
-
         viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //YOUR ACTION HERE
+                DatabaseManager.getInstance().deleteWord(item);
             }
         });
     }

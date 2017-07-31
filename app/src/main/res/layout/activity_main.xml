@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="braincollaboration.wordus.MainActivity">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/recycler_view_bottom_margin"/>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="match_parent"
         android:background="@android:color/white"
         android:orientation="vertical"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="80dp"
+        app:behavior_peekHeight="@dimen/recycler_view_bottom_margin"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
         <TextView
-            android:id="@+id/bottom_sheet_top_text"
+            android:id="@+id/bottom_sheet_title_text"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="@dimen/recycler_view_bottom_margin"
             android:background="@color/colorAccent"
             android:gravity="center"
             android:text="@string/bottom_sheet_peek"
@@ -42,7 +41,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/bottom_sheet_bottom_text"
+                    android:id="@+id/bottom_sheet_content_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
