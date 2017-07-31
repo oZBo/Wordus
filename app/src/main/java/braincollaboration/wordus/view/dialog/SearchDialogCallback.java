@@ -1,4 +1,4 @@
-package braincollaboration.wordus.dialog;
+package braincollaboration.wordus.view.dialog;
 
 import android.text.Editable;
 
