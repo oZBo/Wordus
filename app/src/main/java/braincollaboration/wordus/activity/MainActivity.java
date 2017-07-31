@@ -43,10 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initWidgets();
-        getDataSet();
-        bottomScreenBehavior();
-        initRetrofit();
+        loadDataFromDB();
     }
 
     private void initWidgets() {
@@ -55,11 +52,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         wordsRecycleView = (RecyclerView) findViewById(R.id.recycler_view);
     }
 
-    private void getDataSet() {
+    private void loadDataFromDB() {
         DatabaseManager.getInstance().getWordsList(new DefaultBackgroundCallback<List<Word>>() {
             @Override
             public void doOnSuccess(List<Word> result) {
+                initWidgets();
+                configureBottomSheet();
                 initRecyclerView(result);
+                initRetrofit();
             }
         });
     }
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void bottomScreenBehavior() {
+    private void configureBottomSheet() {
         LinearLayout llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         bottomSheetBehavior.setBottomSheetCallback(new BottomScreenBehavior(fab));
