@@ -1,4 +1,4 @@
-package braincollaboration.wordus.SQLite;
+package braincollaboration.wordus.database;
 
 import android.content.ContentValues;
 import android.content.Context;

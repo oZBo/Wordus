@@ -1,4 +1,4 @@
-package braincollaboration.wordus;
+package braincollaboration.wordus.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -15,18 +15,20 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import braincollaboration.wordus.R;
+import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
-import braincollaboration.wordus.dialog.SearchDialog;
-import braincollaboration.wordus.dialog.SearchDialogCallback;
+import braincollaboration.wordus.view.dialog.SearchDialog;
+import braincollaboration.wordus.view.dialog.SearchDialogCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
 import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.utils.DebugWordListUtil;
-import braincollaboration.wordus.view.BottomScreenBehavior;
+import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {

@@ -1,4 +1,4 @@
-package braincollaboration.wordus.view;
+package braincollaboration.wordus.view.bottomsheet;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;

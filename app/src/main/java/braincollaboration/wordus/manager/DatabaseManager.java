@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import braincollaboration.wordus.SQLite.WordusDatabaseHelper;
+import braincollaboration.wordus.database.WordusDatabaseHelper;
 import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
