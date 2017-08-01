@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
@@ -21,20 +22,23 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
 
     private Context context;
     private IWordAdapterCallback actionsCallback;
+    private List<Word> wordsList = new ArrayList<>();
 
     public WordAdapter(Context context, @LayoutRes int layoutResId, List<Word> wordList, @NonNull IWordAdapterCallback callback) {
         super.setItemList(wordList);
         this.context = context;
         this.actionsCallback = callback;
+        this.wordsList = wordList;
         setCustomHeaderLayout(layoutResId);
     }
 
-    public void refreshAWordList(List<Word> words) {
+    public void refreshWordList(List<Word> words) {
+        wordsList = words;
         super.setItemList(words);
     }
 
     @Override
-    public void onBindItemViewHolder(RecyclerView.ViewHolder holder, final Word item, @ViewType int viewType) {
+    public void onBindItemViewHolder(final RecyclerView.ViewHolder holder, final Word item, @ViewType int viewType) {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.wordName.setText(item.getWordName());
 
@@ -48,6 +52,8 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
         viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                wordsList.remove(item);
+                WordAdapter.super.setItemList(wordsList);
                 actionsCallback.onItemDeleteButtonClicked(item);
             }
         });
