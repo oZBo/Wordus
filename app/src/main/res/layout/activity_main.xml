@@ -65,7 +65,8 @@
         android:src="@drawable/ic_search_white_24dp"
         android:theme="@style/Widget.Design.FloatingActionButton"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_anchor="@+id/bottom_sheet"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchor="@+id/recycler_view"
+        app:layout_anchorGravity="bottom|right"
+        app:layout_behavior="braincollaboration.wordus.view.fab.ScrollAwareFABBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

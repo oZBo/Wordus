@@ -37,6 +37,7 @@ public class SearchDialog {
         dialogBuilder.setView(searchView);
 
         final EditText userInput = (EditText) searchView.findViewById(R.id.input_text);
+        userInput.setLines(1);
 
         dialogBuilder
                 .setCancelable(true)

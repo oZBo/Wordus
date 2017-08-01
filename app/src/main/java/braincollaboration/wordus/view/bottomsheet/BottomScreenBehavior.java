@@ -16,17 +16,17 @@ public class BottomScreenBehavior extends BottomSheetBehavior.BottomSheetCallbac
 
     @Override
     public void onStateChanged(@NonNull View bottomSheet, int newState) {
-        if (BottomSheetBehavior.STATE_EXPANDED == newState) {
-            floatingActionButton.setVisibility(View.GONE);
-        } else {
-            floatingActionButton.setVisibility(View.VISIBLE);
-        }
+//        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+//            floatingActionButton.setVisibility(View.VISIBLE);
+//            floatingActionButton.show();
+//        } else {
+//            floatingActionButton.setVisibility(View.GONE);
+//            floatingActionButton.hide();
+//        }
     }
 
     @Override
     public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-        if (slideOffset >= 0) {
-            floatingActionButton.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start();
-        }
+
     }
 }
