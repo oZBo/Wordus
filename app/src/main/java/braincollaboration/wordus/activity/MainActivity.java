@@ -21,14 +21,13 @@ import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
-import braincollaboration.wordus.view.dialog.SearchDialog;
-import braincollaboration.wordus.view.dialog.SearchDialogCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
 import braincollaboration.wordus.utils.Constants;
-import braincollaboration.wordus.utils.DebugWordListUtil;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
+import braincollaboration.wordus.view.dialog.SearchDialog;
+import braincollaboration.wordus.view.dialog.SearchDialogCallback;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
-        adapter = new WordAdapter(this, R.layout.header_separator, DebugWordListUtil.getStubWordList(), this);
+        adapter = new WordAdapter(this, R.layout.header_separator, dataSet, this);
         wordsRecycleView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         wordsRecycleView.setLayoutManager(new LinearLayoutManager(this));
         wordsRecycleView.setItemAnimator(new DefaultItemAnimator());
@@ -125,18 +124,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Word wordClass = new Word();
         wordClass.setWordName(word);
         mDataSet.add(wordClass);
-        adapter.refreshAWordList(mDataSet);
+        adapter.refreshWordList(mDataSet);
     }
 
     @Override
     public void onItemClicked(Word word) {
-        Toast.makeText(this, word.getWordName() + " clicked", Toast.LENGTH_SHORT).show();
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override
     public void onItemDeleteButtonClicked(Word word) {
-        Toast.makeText(this, word.getWordName() + " deleted", Toast.LENGTH_SHORT).show();
-        DatabaseManager.getInstance().deleteWord(word);
+        DatabaseManager.getInstance().deleteWord(word, new DefaultBackgroundCallback<Void>() {
+            @Override
+            public void doOnSuccess(Void result) {
+
+            }
+        });
     }
 }
