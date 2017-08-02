@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -19,12 +18,10 @@ import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.CheckForLetters;
 import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
-import braincollaboration.wordus.view.dialog.SearchDialog;
-import braincollaboration.wordus.view.dialog.SearchDialogCallback;
+import braincollaboration.wordus.view.dialog.TextInputDialog;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {
@@ -87,17 +84,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        SearchDialog searchDialog = new SearchDialog(new SearchDialogCallback() {
-            @Override
-            public void findAWord(Editable text) {
-                if (!text.toString().equals("")) {
-                    addWord(CheckForLetters.checkIsThisALetters(text.toString()));
-                } else {
-                    Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }, this);
-        searchDialog.showDialog();
+        TextInputDialog inputDialog = new TextInputDialog(MainActivity.this);
+        inputDialog.show();
+//        SearchDialog searchDialog = new SearchDialog(new SearchDialogCallback() {
+//            @Override
+//            public void findAWord(Editable text) {
+//                if (!text.toString().equals("")) {
+//                    addWord(CheckForLetters.checkIsThisALetters(text.toString()));
+//                } else {
+//                    Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//        }, this);
+//        searchDialog.showDialog();
     }
 
     private void addWord(final String word) {
