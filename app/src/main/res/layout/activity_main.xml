@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <braincollaboration.wordus.view.RecyclerViewWithFAB
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/recycler_view_bottom_margin" />
+        android:layout_marginBottom="@dimen/recycler_view_bottom_margin"
+        app:fabId="@+id/fab" />
 
     <LinearLayout
         android:id="@+id/bottom_sheet"
@@ -66,7 +67,6 @@
         android:theme="@style/Widget.Design.FloatingActionButton"
         app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@+id/recycler_view"
-        app:layout_anchorGravity="bottom|right"
-        app:layout_behavior="braincollaboration.wordus.view.fab.ScrollAwareFABBehavior"/>
+        app:layout_anchorGravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>
