@@ -3,4 +3,7 @@
     <declare-styleable name="FontTextView">
         <attr name="customFont" format="string"/>
     </declare-styleable>
+    <declare-styleable name="RecyclerViewWithFAB">
+        <attr name="fabId" format="reference"/>
+    </declare-styleable>
 </resources>
