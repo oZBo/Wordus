@@ -21,6 +21,7 @@ import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
+import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
 import braincollaboration.wordus.view.dialog.TextInputDialog;
 
 
@@ -84,7 +85,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        TextInputDialog inputDialog = new TextInputDialog(MainActivity.this);
+        TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
+            @Override
+            public void onPositiveButtonClickedWithResult(String s) {
+                Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+            }
+        });
         inputDialog.show();
 //        SearchDialog searchDialog = new SearchDialog(new SearchDialogCallback() {
 //            @Override

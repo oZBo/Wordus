@@ -1,4 +1,4 @@
-package braincollaboration.wordus.view.dialog;
+package braincollaboration.wordus.view.dialog.base;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,12 +18,14 @@ public abstract class DialogBase {
     private AlertDialog.Builder dialogBuilder;
     private Dialog dialog;
     private Context context;
-    private String firstButtonCaption;
-    private String secondButtonCaption;
+    private String positiveButtonCaption;
+    private String negativeButtonCaption;
 
     protected abstract int getLayoutResId();
 
-    DialogBase(Context context) {
+    protected abstract void initWidgets(View root);
+
+    protected DialogBase(Context context) {
         this.context = context;
         initDialog();
     }
@@ -33,6 +35,7 @@ public abstract class DialogBase {
         View root = inflater.inflate(getLayoutResId(), null);
         dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setView(root);
+        initWidgets(root);
     }
 
     protected void initSingleButtonDialog(@StringRes int btnTextId, OnClickListener clickListener) {
@@ -41,10 +44,10 @@ public abstract class DialogBase {
         }
     }
 
-    protected void initDoubleButtonDialog(@StringRes int firstBtnTextId, @StringRes int secondBtnTextId, OnClickListener firstBtnCallback, OnClickListener secondBtnCallback) {
+    protected void initDoubleButtonDialog(@StringRes int positiveBtnTextId, @StringRes int negativeBtnTextId, OnClickListener callback) {
         if (dialogBuilder != null) {
-            dialogBuilder.setPositiveButton(firstBtnTextId, firstBtnCallback);
-            dialogBuilder.setNegativeButton(secondBtnTextId, secondBtnCallback);
+            dialogBuilder.setPositiveButton(positiveBtnTextId, callback);
+            dialogBuilder.setNegativeButton(negativeBtnTextId, callback);
         }
     }
 

@@ -8,16 +8,20 @@
         android:id="@+id/dialog_header"
         android:layout_width="match_parent"
         android:layout_height="@dimen/default_header_height"
-        android:orientation="horizontal"/>
+        android:background="@color/colorAccent"
+        android:orientation="horizontal" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="@dimen/base_margin">
 
         <EditText
+            android:id="@+id/text_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Word to search"/>
+            android:hint="Word to search"
+            android:lines="1" />
 
     </android.support.design.widget.TextInputLayout>
 
