@@ -7,6 +7,8 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import braincollaboration.wordus.R;
+
 import static android.content.DialogInterface.OnClickListener;
 
 /**
@@ -31,11 +33,18 @@ public abstract class DialogBase {
     }
 
     private void initDialog() {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View root = inflater.inflate(getLayoutResId(), null);
         dialogBuilder = new AlertDialog.Builder(context);
-        dialogBuilder.setView(root);
-        initWidgets(root);
+
+        if (getLayoutResId() != 0) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View root = inflater.inflate(getLayoutResId(), null);
+            dialogBuilder.setView(root);
+            initWidgets(root);
+        } else {
+            dialogBuilder.setIcon(android.R.drawable.ic_menu_delete);
+            dialogBuilder.setTitle(R.string.confirm_title);
+            dialogBuilder.setMessage(R.string.delete_question);
+        }
     }
 
     protected void initSingleButtonDialog(@StringRes int btnTextId, OnClickListener clickListener) {

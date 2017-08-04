@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
@@ -18,9 +19,11 @@ import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
+import braincollaboration.wordus.utils.CheckForLetters;
 import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
+import braincollaboration.wordus.view.dialog.ConfirmationDialog;
 import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
 import braincollaboration.wordus.view.dialog.TextInputDialog;
 
@@ -88,7 +91,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+                if (!s.equals("")) {
+                    addWord(CheckForLetters.checkIsThisALetters(s));
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
         inputDialog.show();
@@ -133,12 +140,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onItemDeleteButtonClicked(Word word) {
-        DatabaseManager.getInstance().deleteWord(word, new DefaultBackgroundCallback<Void>() {
+    public void onItemDeleteButtonClicked(final Word word) {
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(MainActivity.this, new DefaultDialogCallback() {
             @Override
-            public void doOnSuccess(Void result) {
-
+            public void onPositiveButtonClicked() {
+                DatabaseManager.getInstance().deleteWord(word, new DefaultBackgroundCallback<Void>() {
+                    @Override
+                    public void doOnSuccess(Void result) {
+                    }
+                });
             }
         });
+        confirmationDialog.show();
+
     }
 }
