@@ -18,5 +18,6 @@
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="search">Search</string>
+    <string name="word_to_search">Word to search</string>
 
 </resources>

@@ -31,7 +31,7 @@ public class JsonResponseNodeTypeDecryption {
 
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
 
-        while (fieldsIterator.hasNext()) {
+        while (fieldsIterator != null && fieldsIterator.hasNext()) {
             Map.Entry<String, JsonNode> field = fieldsIterator.next();
             Log.e(Constants.LOG_TAG, "Key: " + field.getKey() + "\tValue: " + field.getValue());
             if (field.getKey().equals("Items")) {
@@ -61,14 +61,6 @@ public class JsonResponseNodeTypeDecryption {
                     arrayList.add(oneArrayString);
                     oneArrayString = "";
                 }
-            }
-        }
-
-
-        if (!arrayList.isEmpty()) {
-            for (String jsonClass : arrayList) {
-                Log.e(Constants.LOG_TAG, jsonClass);
-                new JsonResponseNodeTypeDecryption().parse(jsonClass);
             }
         }
     }
