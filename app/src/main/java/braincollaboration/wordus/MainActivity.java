@@ -1,6 +1,7 @@
 package braincollaboration.wordus;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.adapter.WordAdapter;
@@ -56,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initWidgets();
         getDataSet();
         bottomScreenBehavior();
-        initRetrofit();
     }
 
     private void initWidgets() {
@@ -113,40 +114,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottomSheetBehavior.setBottomSheetCallback(new BottomScreenBehavior(fab));
     }
 
-    private void initRetrofit() {
-        new JsonResponseNodeTypeDecryption().parse(Constants.RESPONSE_PICTURE);
-    }
+    private void searchWordDescriptionRetrofit(String word) {
+        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
 
-//    private void initRetrofit() {
-//        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
-//
-//        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning();
-//
-//        myCall.enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                if (response.isSuccessful() && response.code() == 200) {
-//                    Log.e(Constants.LOG_TAG, "search response is success");
-//
-//                    try {
-//                        new JsonResponseNodeTypeDecryption().parse(response.body().string());
-//                    } catch (IOException e) {
-//                        Log.e(Constants.LOG_TAG, "search RAW response error: " + e.toString());
-//                    }
-//
-////                    new JsonResponseNodeTypeDecryption<Response>(response);
-////                    Log.e(Constants.LOG_TAG, JsonResponseNodeTypeDecryption.wordMeaning.toString());
-//                } else {
-//                    Log.e(Constants.LOG_TAG, "search response isn't successful");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
-//            }
-//        });
-//    }
+        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(word, 1049, 1049, 1, 0, 2);
+
+        myCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.code() == 200) {
+                    Log.e(Constants.LOG_TAG, "search response is success");
+
+                    try {
+                        ArrayList<String> wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
+                        for (String w : wordMeaning) {
+                            Log.e(Constants.LOG_TAG, w);
+                        }
+                    } catch (IOException e) {
+                        Log.e(Constants.LOG_TAG, "search RAW response error: " + e.toString());
+                    }
+                } else {
+                    Log.e(Constants.LOG_TAG, "search response isn't successful");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
+            }
+        });
+    }
 
     @Override
     public void onClick(View v) {
