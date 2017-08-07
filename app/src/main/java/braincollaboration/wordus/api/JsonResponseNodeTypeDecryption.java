@@ -1,64 +1,65 @@
 package braincollaboration.wordus.api;
 
-import android.util.Log;
-
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import braincollaboration.wordus.utils.Constants;
-import braincollaboration.wordus.utils.JsonParse;
+import braincollaboration.wordus.utils.PerformanceMeter;
 
 public class JsonResponseNodeTypeDecryption {
 
     private String dahlDictMeaning;
     private String explanDictMeaning;
+    private String urbanDictMeaning;
+    private Map<String, String> mapDictionaries = new HashMap<>();
     private ArrayList<String> wordMeaning = new ArrayList<>();
 
     public ArrayList<String> parse(String json) {
         JsonParse jp = new JsonParse();
 
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jp.jsonRoot(json);
+
         String mainItemsArrayValue = jp.findJsonValue("Items", null, fieldsIterator);
+
         ArrayList<String> listOfMainItems = jp.isItJsonArrayList(mainItemsArrayValue);
 
-        for (String jsonClass : listOfMainItems) {
-            fieldsIterator = jp.jsonRoot(jsonClass);
+        for (String jsonMainItem : listOfMainItems) {
+            fieldsIterator = jp.jsonRoot(jsonMainItem);
             String dict = jp.findJsonValue("Dictionary", null, fieldsIterator);
 
-            if (dict.equals("\"Dahl (Ru-Ru)\"")) {
-                fieldsIterator = jp.jsonRoot(jsonClass);
-                dahlDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
-            } else if (dict.equals("\"Explanatory (Ru-Ru)\"")) {
-                fieldsIterator = jp.jsonRoot(jsonClass);
-                explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+            switch (dict) {
+                case "\"Dahl (Ru-Ru)\"":
+                    fieldsIterator = jp.jsonRoot(jsonMainItem);
+                    dahlDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                    mapDictionaries.put(Constants.dahlDictionary, dahlDictMeaning);
+                    break;
+                case "\"Explanatory (Ru-Ru)\"":
+                    fieldsIterator = jp.jsonRoot(jsonMainItem);
+                    explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                    mapDictionaries.put(Constants.explanatoryDictionary, explanDictMeaning);
+                    break;
+                case "\"UrbanDictionary (Ru-Ru)\"":
+                    fieldsIterator = jp.jsonRoot(jsonMainItem);
+                    urbanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                    mapDictionaries.put(Constants.urbanDictionary, urbanDictMeaning);
+                    break;
             }
         }
 
-        if (dahlDictMeaning != null) {
-            jp.findDescription(dahlDictMeaning);
+        if (!mapDictionaries.isEmpty()) {
+            for (Map.Entry<String, String> dictionary : mapDictionaries.entrySet()) {
+                String dictName = dictionary.getKey();
 
-            dahlDictMeaning = "В. Даль Толковый словарь живого великорусского языка\n";
-            dahlDictMeaning += JsonParse.dictionary;
-            if (explanDictMeaning != null) {
-                dahlDictMeaning += "\n";
+                jp.findDescription(dictionary.getValue());
+                dictName += JsonParse.dictionary + "\n\n";
+                wordMeaning.add(dictName);
+
+                JsonParse.dictionary = "";
             }
-            wordMeaning.add(dahlDictMeaning);
-        }
-
-        JsonParse.dictionary = "";
-
-        if (explanDictMeaning != null) {
-            jp.findDescription(explanDictMeaning);
-
-            explanDictMeaning = "Д.Н. Ушаков Большой современный толковый словарь русского языка\n";
-            explanDictMeaning += JsonParse.dictionary;
-            wordMeaning.add(explanDictMeaning);
         }
 
         return wordMeaning;
