@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initWidgets();
         getDataSet();
         bottomScreenBehavior();
+        searchWordDescriptionRetrofit("ключ");
     }
 
     private void initWidgets() {
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void searchWordDescriptionRetrofit(String word) {
         ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
 
-        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(word, 1049, 1049, 1, 0, 2);
+        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(word, 1049, 1049, 1, 0, 3);
 
         myCall.enqueue(new Callback<ResponseBody>() {
             @Override
