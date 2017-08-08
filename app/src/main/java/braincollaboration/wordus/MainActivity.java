@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initWidgets();
         getDataSet();
         bottomScreenBehavior();
-        searchWordDescriptionRetrofit("ключ");
+        //searchWordDescriptionRetrofit("ключ");
     }
 
     private void initWidgets() {
@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        searchWordDescriptionRetrofit("картина");
         SearchDialog searchDialog = new SearchDialog(new SearchDialogCallback() {
             @Override
             public void findAWord(Editable text) {
