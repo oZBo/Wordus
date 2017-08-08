@@ -8,24 +8,21 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
-import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
-import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
 import braincollaboration.wordus.view.dialog.ConfirmationDialog;
-import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
 import braincollaboration.wordus.view.dialog.TextInputDialog;
+import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {
@@ -83,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initRetrofit() {
-        new JsonResponseNodeTypeDecryption().parse(Constants.RESPONSE);
+//        new JsonResponseNodeTypeDecryption().parse(Constants.RESPONSE);
     }
 
     @Override
