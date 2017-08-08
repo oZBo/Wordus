@@ -64,12 +64,13 @@ public class Controller {
                 // a) Authorization value is empty because user is not logged in yet
                 // b) There is already a header with updated Authorization value
                 if (authorizationTokenIsEmpty() || alreadyHasAuthorizationHeader(originalRequest)) {
+                    Log.e(Constants.LOG_TAG, "inter if");
                     return chain.proceed(originalRequest);
                 }
 
                 // Add authorization header with updated authorization value to intercepted request
                 Request authorisedRequest = originalRequest.newBuilder()
-                        .header("Authorization: Bearer ", accessToken)
+                        .header("Authorization", "Bearer " + accessToken)
                         .build();
                 return chain.proceed(authorisedRequest);
             }
@@ -92,7 +93,7 @@ public class Controller {
                         Log.e(Constants.LOG_TAG, "basic response isn't successful");
                     }
                 } catch (IOException e) {
-                    Log.e(Constants.LOG_TAG, "basic response isn't successful cause error " + e.toString());
+                    Log.e(Constants.LOG_TAG, "basic response isn't successful cause error: " + e.toString());
                 }
 
                 // Add new header to rejected request and retry it
