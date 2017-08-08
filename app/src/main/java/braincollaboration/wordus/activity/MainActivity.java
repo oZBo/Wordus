@@ -1,28 +1,41 @@
 package braincollaboration.wordus.activity;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
+import braincollaboration.wordus.api.ABBYYLingvoAPI;
+import braincollaboration.wordus.api.Controller;
+import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
+import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
 import braincollaboration.wordus.view.dialog.ConfirmationDialog;
 import braincollaboration.wordus.view.dialog.TextInputDialog;
 import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {
@@ -32,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<Word> mDataSet;
     private WordAdapter adapter;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
+    private TextView wordDescriptionTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initWidgets() {
+        wordDescriptionTextView = (TextView) findViewById(R.id.bottom_sheet_content_text);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
         recyclerView = (RecyclerViewWithFAB) findViewById(R.id.recycler_view);
@@ -53,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 initWidgets();
                 configureBottomSheet();
                 initRecyclerView(result);
-                initRetrofit();
             }
         });
     }
@@ -79,10 +93,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottomSheetBehavior.setBottomSheetCallback(new BottomScreenBehavior(fab));
     }
 
-    private void initRetrofit() {
-//        new JsonResponseNodeTypeDecryption().parse(Constants.RESPONSE);
-    }
-
     @Override
     public void onClick(View v) {
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
@@ -96,18 +106,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         inputDialog.show();
-//        SearchDialog searchDialog = new SearchDialog(new SearchDialogCallback() {
-//            @Override
-//            public void findAWord(Editable text) {
-//                if (!text.toString().equals("")) {
-//                    addWord(CheckForLetters.checkIsThisALetters(text.toString()));
-//                } else {
-//                    Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//        }, this);
-//        searchDialog.showDialog();
     }
 
     private void addWord(final String word) {
@@ -117,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (result) {
                     addWordToListView(word);
                     Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
+                    searchWordDescriptionRetrofit(word);
                 } else {
                     Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
                 }
@@ -151,4 +150,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         confirmationDialog.show();
 
     }
+
+    private void searchWordDescriptionRetrofit(String word) {
+        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
+
+        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(word, 1049, 1049, 1, 0, 3);
+
+        myCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.code() == 200) {
+                    Log.e(Constants.LOG_TAG, "search response is success");
+
+                    try {
+                        ArrayList<String> wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
+                        for (String w : wordMeaning) {
+                            Log.e(Constants.LOG_TAG, w);
+                            wordDescriptionTextView.setText(wordDescriptionTextView.getText() != null ? wordDescriptionTextView.getText() + w : "" + w);
+                        }
+                    } catch (IOException e) {
+                        Log.e(Constants.LOG_TAG, "search RAW response error: " + e.toString());
+                    }
+                } else {
+                    Log.e(Constants.LOG_TAG, "search response isn't successful");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
+            }
+        });
+    }
+
 }
