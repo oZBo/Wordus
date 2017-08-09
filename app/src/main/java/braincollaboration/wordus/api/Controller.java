@@ -64,7 +64,6 @@ public class Controller {
                 // a) Authorization value is empty because user is not logged in yet
                 // b) There is already a header with updated Authorization value
                 if (authorizationTokenIsEmpty() || alreadyHasAuthorizationHeader(originalRequest)) {
-                    Log.e(Constants.LOG_TAG, "inter if");
                     return chain.proceed(originalRequest);
                 }
 
