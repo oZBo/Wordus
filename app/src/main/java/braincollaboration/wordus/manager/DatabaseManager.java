@@ -37,7 +37,7 @@ public class DatabaseManager {
         BackgroundManager.getInstance().doUiBlockingBackgroundTask(loadWordsTask, callback);
     }
 
-    public void addWordInDB(final String word, DefaultBackgroundCallback<Boolean> callback) {
+    public void addWordNameInDB(final String word, DefaultBackgroundCallback<Boolean> callback) {
         IBackgroundTask<Boolean> backgroundTask = new IBackgroundTask<Boolean>() {
             @Override
             public Boolean execute() {
@@ -46,6 +46,24 @@ public class DatabaseManager {
                     db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
                     if (db != null) {
                         WordusDatabaseHelper.addWordNameInDB(db, word);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);
+    }
+
+    public void addWordDescriptionInDB(final String wordName, final String wordDescription, DefaultBackgroundCallback<Boolean> callback) {
+        IBackgroundTask<Boolean> backgroundTask = new IBackgroundTask<Boolean>() {
+            @Override
+            public Boolean execute() {
+                SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                if (db != null && WordusDatabaseHelper.isDBContainAWord(db, wordName)) {
+                    db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                    if (db != null) {
+                        //WordusDatabaseHelper.addWordDescriptionInDB();
                         return true;
                     }
                 }
