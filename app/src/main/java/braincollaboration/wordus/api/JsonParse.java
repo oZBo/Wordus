@@ -188,6 +188,6 @@ public class JsonParse {
                 Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
             }
         });
-        return result.isEmpty() ? null : result;
+        return result;
     }
 }

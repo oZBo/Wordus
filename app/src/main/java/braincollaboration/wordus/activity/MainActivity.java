@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addWord(final String word) {
         if (!word.equals("")) {
-            DatabaseManager.getInstance().addWordInDB(word, new DefaultBackgroundCallback<Boolean>() {
+            DatabaseManager.getInstance().addWordNameInDB(word, new DefaultBackgroundCallback<Boolean>() {
                 @Override
                 public void doOnSuccess(Boolean result) {
                     if (result) {
@@ -152,13 +152,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void searchWordDescriptionRetrofit(String word) {
-        RetrofitManager.getInstance().searchWordDescription(word, new DefaultBackgroundCallback<ArrayList<String>>() {
+    private void searchWordDescriptionRetrofit(final String wordName) {
+        RetrofitManager.getInstance().searchWordDescription(wordName, new DefaultBackgroundCallback<ArrayList<String>>() {
             @Override
             public void doOnSuccess(ArrayList<String> result) {
-                //DatabaseManager.getInstance().addWordDescriptionInDB();
+                if (!result.isEmpty()) {
+                    addWordDescriptionInDB(wordName, result);
+                }
             }
         });
+    }
+
+    private void addWordDescriptionInDB(String wordName, ArrayList<String> result) {
+        //DatabaseManager.getInstance().addWordDescriptionInDB();
     }
 
 }
