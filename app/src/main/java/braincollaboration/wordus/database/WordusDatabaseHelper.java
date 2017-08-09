@@ -125,16 +125,15 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
     public static void addWordNameInDB(SQLiteDatabase db, String s) {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, s);
         insertWord(db, wordNameValue);
-        Log.d(Constants.LOG_TAG, "word added in db");
+        Log.d(Constants.LOG_TAG, "word name added in db");
 
         db.close();
     }
 
-    //not finished yet
     public static void addWordDescriptionInDB(SQLiteDatabase db, String wordName, String wordDescription) {
-        ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, wordName);
-        insertWord(db, wordNameValue);
-        Log.d(Constants.LOG_TAG, "word added in db");
+        ContentValues wordNameValue = makeWordValue(null, COLUMN_DESCRIPTION, wordDescription);
+        updateWord(db, wordNameValue, COLUMN_NAME, wordName);
+        Log.d(Constants.LOG_TAG, "word description added in db");
 
         db.close();
     }

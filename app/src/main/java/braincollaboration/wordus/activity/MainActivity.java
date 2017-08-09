@@ -59,9 +59,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         DatabaseManager.getInstance().getWordsList(new DefaultBackgroundCallback<List<Word>>() {
             @Override
             public void doOnSuccess(List<Word> result) {
-                initWidgets();
-                configureBottomSheet();
-                initRecyclerView(result);
+                if (mDataSet == null) {
+                    initWidgets();
+                    configureBottomSheet();
+                    initRecyclerView(result);
+                } else {
+                    adapter.refreshWordList(result);
+                }
             }
         });
     }
@@ -153,18 +157,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void searchWordDescriptionRetrofit(final String wordName) {
-        RetrofitManager.getInstance().searchWordDescription(wordName, new DefaultBackgroundCallback<ArrayList<String>>() {
+        RetrofitManager.getInstance().searchWordDescription(wordName, new DefaultBackgroundCallback<String>() {
             @Override
-            public void doOnSuccess(ArrayList<String> result) {
-                if (!result.isEmpty()) {
+            public void doOnSuccess(String result) {
+                if (!result.equals("")) {
                     addWordDescriptionInDB(wordName, result);
+                } else {
+                    Toast.makeText(MainActivity.this, wordName + " " + getString(R.string.description_not_found), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void addWordDescriptionInDB(String wordName, ArrayList<String> result) {
-        //DatabaseManager.getInstance().addWordDescriptionInDB();
+    private void addWordDescriptionInDB(final String wordName, String result) {
+        DatabaseManager.getInstance().addWordDescriptionInDB(wordName, result, new DefaultBackgroundCallback<Boolean>() {
+            @Override
+            public void doOnSuccess(Boolean result) {
+                if (result) {
+                    loadDataFromDB();
+                    Toast.makeText(MainActivity.this, wordName + " " + getString(R.string.description_found), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 }
