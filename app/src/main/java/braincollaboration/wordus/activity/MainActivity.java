@@ -24,6 +24,7 @@ import braincollaboration.wordus.api.Controller;
 import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.manager.DatabaseManager;
+import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
 import braincollaboration.wordus.utils.Constants;
@@ -54,13 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loadDataFromDB();
     }
 
-    private void initWidgets() {
-        wordDescriptionTextView = (TextView) findViewById(R.id.bottom_sheet_content_text);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(this);
-        recyclerView = (RecyclerViewWithFAB) findViewById(R.id.recycler_view);
-    }
-
     private void loadDataFromDB() {
         DatabaseManager.getInstance().getWordsList(new DefaultBackgroundCallback<List<Word>>() {
             @Override
@@ -70,6 +64,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 initRecyclerView(result);
             }
         });
+    }
+
+    private void initWidgets() {
+        wordDescriptionTextView = (TextView) findViewById(R.id.bottom_sheet_content_text);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+        recyclerView = (RecyclerViewWithFAB) findViewById(R.id.recycler_view);
+    }
+
+    private void configureBottomSheet() {
+        LinearLayout llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomScreenBehavior(fab));
     }
 
     private void initRecyclerView(List<Word> dataSet) {
@@ -87,40 +94,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void configureBottomSheet() {
-        LinearLayout llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
-        bottomSheetBehavior.setBottomSheetCallback(new BottomScreenBehavior(fab));
-    }
-
     @Override
     public void onClick(View v) {
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                if (!s.equals("")) {
-                    addWord(CheckForLetters.checkIsThisALetters(s));
-                } else {
-                    Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
-                }
+                addWord(CheckForLetters.checkIsThisALetters(s));
             }
         });
         inputDialog.show();
     }
 
     private void addWord(final String word) {
-        DatabaseManager.getInstance().addWordInDB(word, new DefaultBackgroundCallback<Boolean>() {
-            @Override
-            public void doOnSuccess(Boolean result) {
-                if (result) {
-                    addWordToListView(word);
-                    Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
-                    searchWordDescriptionRetrofit(word);
-                } else {
-                    Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
+        if (!word.equals("")) {
+            DatabaseManager.getInstance().addWordInDB(word, new DefaultBackgroundCallback<Boolean>() {
+                @Override
+                public void doOnSuccess(Boolean result) {
+                    if (result) {
+                        addWordToListView(word);
+                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
+                        searchWordDescriptionRetrofit(word);
+                    } else {
+                        Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addWordToListView(String word) {
@@ -152,33 +153,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void searchWordDescriptionRetrofit(String word) {
-        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
-
-        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(word, 1049, 1049, 1, 0, 3);
-
-        myCall.enqueue(new Callback<ResponseBody>() {
+        RetrofitManager.getInstance().searchWordDescription(word, new DefaultBackgroundCallback<ArrayList<String>>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.code() == 200) {
-                    Log.e(Constants.LOG_TAG, "search response is success");
-
-                    try {
-                        ArrayList<String> wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
-                        for (String w : wordMeaning) {
-                            Log.e(Constants.LOG_TAG, w);
-                            wordDescriptionTextView.setText(wordDescriptionTextView.getText() != null ? wordDescriptionTextView.getText() + w : "" + w);
-                        }
-                    } catch (IOException e) {
-                        Log.e(Constants.LOG_TAG, "search RAW response error: " + e.toString());
-                    }
-                } else {
-                    Log.e(Constants.LOG_TAG, "search response isn't successful");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
+            public void doOnSuccess(ArrayList<String> result) {
+                //DatabaseManager.getInstance().addWordDescriptionInDB();
             }
         });
     }

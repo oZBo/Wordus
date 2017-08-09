@@ -17,7 +17,7 @@ import braincollaboration.wordus.utils.Constants;
 public class WordusDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "wordus"; // Datebase name
-    private static final int DB_VERSION = 1; // Datebse ver.
+    private static final int DB_VERSION = 1; // Databse ver.
 
     private static final String TABLE_NAME = "WORDS";
     private static final String COLUMN_ID = "_id";
@@ -122,8 +122,17 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         return contain;
     }
 
-    public static void addInDB(SQLiteDatabase db, String s) {
+    public static void addWordNameInDB(SQLiteDatabase db, String s) {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, s);
+        insertWord(db, wordNameValue);
+        Log.d(Constants.LOG_TAG, "word added in db");
+
+        db.close();
+    }
+
+    //not finished yet
+    public static void addWordDescriptionInDB(SQLiteDatabase db, String wordName, String wordDescription) {
+        ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, wordName);
         insertWord(db, wordNameValue);
         Log.d(Constants.LOG_TAG, "word added in db");
 

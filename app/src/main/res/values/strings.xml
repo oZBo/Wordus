@@ -8,7 +8,7 @@
     <string name="database_unavailable">Database unavailable. Try one more time!</string>
     <string name="word_">word</string>
     <string name="_successfully_added_in_db">added</string>
-    <string name="_successfully_deleteed_from_db">deleted</string>
+    <string name="_successfully_deleted_from_db">deleted</string>
     <string name="hello_world">Hello World</string>
     <string name="word_added">Word added</string>
     <string name="confirm_title">Confirm</string>
