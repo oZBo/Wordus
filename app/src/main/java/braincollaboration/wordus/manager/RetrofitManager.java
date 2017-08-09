@@ -21,11 +21,11 @@ public class RetrofitManager {
         return instance;
     }
 
-    public void searchWordDescription(final String wordName, DefaultBackgroundCallback<ArrayList<String>> callback) {
-        IBackgroundTask<ArrayList<String>> backgroundTask = new IBackgroundTask<ArrayList<String>>() {
+    public void searchWordDescription(final String wordName, DefaultBackgroundCallback<String> callback) {
+        IBackgroundTask<String> backgroundTask = new IBackgroundTask<String>() {
             @Override
-            public ArrayList<String> execute() {
-                return JsonParse.findWordDescription(wordName);
+            public String execute() {
+                return JsonParse.findWordDescriptionRetrofit(wordName);
             }
         };
         BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);

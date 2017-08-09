@@ -16,9 +16,9 @@ public class JsonResponseNodeTypeDecryption {
     private String explanDictMeaning;
     private String urbanDictMeaning;
     private Map<String, String> mapDictionaries = new HashMap<>();
-    private ArrayList<String> wordMeaning = new ArrayList<>();
+    private String wordMeaning = "";
 
-    public ArrayList<String> parse(String json) {
+    public String parse(String json) {
         JsonParse jp = new JsonParse();
 
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jp.jsonRoot(json);
@@ -56,7 +56,7 @@ public class JsonResponseNodeTypeDecryption {
 
                 jp.findDescription(dictionary.getValue());
                 dictName += JsonParse.dictionary + "\n\n";
-                wordMeaning.add(dictName);
+                wordMeaning += dictName;
 
                 JsonParse.dictionary = "";
             }

@@ -160,8 +160,8 @@ public class JsonParse {
         return rootNode != null ? rootNode.fields() : null;
     }
 
-    public static ArrayList<String> findWordDescription(String wordName) {
-        final ArrayList<String> result = new ArrayList<>();
+    public static String findWordDescriptionRetrofit(String wordName) {
+        final String[] result = {null};
         ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
 
         Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(wordName, 1049, 1049, 1, 0, 3);
@@ -173,8 +173,8 @@ public class JsonParse {
                     Log.e(Constants.LOG_TAG, "search response is success");
 
                     try {
-                        ArrayList<String> wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
-                        result.addAll(wordMeaning);
+                        String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
+                        result[0] = wordMeaning;
                     } catch (IOException e) {
                         Log.e(Constants.LOG_TAG, "search RAW response error: " + e.toString());
                     }
@@ -188,6 +188,6 @@ public class JsonParse {
                 Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
             }
         });
-        return result;
+        return result[0];
     }
 }

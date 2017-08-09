@@ -19,5 +19,7 @@
     <string name="ok">OK</string>
     <string name="search">Search</string>
     <string name="word_to_search">Word to search</string>
+    <string name="description_found">description found</string>
+    <string name="description_not_found">description not found</string>
 
 </resources>

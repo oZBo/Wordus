@@ -63,7 +63,7 @@ public class DatabaseManager {
                 if (db != null && WordusDatabaseHelper.isDBContainAWord(db, wordName)) {
                     db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
                     if (db != null) {
-                        //WordusDatabaseHelper.addWordDescriptionInDB();
+                        WordusDatabaseHelper.addWordDescriptionInDB(db, wordName, wordDescription);
                         return true;
                     }
                 }
