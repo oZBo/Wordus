@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void doOnSuccess(Boolean result) {
                 if (result) {
-                    loadDataFromDB();
+                    addWordToListView(word);
                     Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_found), Toast.LENGTH_SHORT).show();
                 }
             }
