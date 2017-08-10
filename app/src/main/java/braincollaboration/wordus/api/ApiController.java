@@ -25,12 +25,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Controller {
-    private static String accessToken = null;
+public class ApiController {
+
+    private static String accessToken;
     private static Request accessTokenRequest;
     private static ABBYYLingvoAPI apiInterfaceInstance;
 
-    public static synchronized ABBYYLingvoAPI getInstance() {
+    public static ABBYYLingvoAPI getInstance() {
         if (apiInterfaceInstance == null) {
             apiInterfaceInstance = getApi();
         }
@@ -106,7 +107,7 @@ public class Controller {
 
         try {
             // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[] {
+            final TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
                         @Override
                         public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
