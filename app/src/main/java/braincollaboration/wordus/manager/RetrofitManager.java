@@ -53,7 +53,7 @@ public class RetrofitManager {
                         Log.e(Constants.LOG_TAG, "search response is success, but code 404");
                     }
                 } catch (IOException e) {
-                    Log.e(Constants.LOG_TAG, "success search response body error: " + e.toString());
+                    Log.e(Constants.LOG_TAG, "search response failure error: " + e.toString());
                 }
                 return outWord;
             }
@@ -80,7 +80,7 @@ public class RetrofitManager {
 //                        }
 //                    }, callback);
 //                } else {
-//                    Log.e(Constants.LOG_TAG, "search response isn't successful, response code: " + response.code());
+//                    Log.e(Constants.LOG_TAG, "search response is success, but code: " + response.code());
 //                }
 //            }
 //
