@@ -12,7 +12,7 @@ public class JsonResponseNodeTypeDecryption {
     private Map<String, String> mapDictionaries = new HashMap<>();
     private String wordMeaning = "";
 
-    public String parse(String json) {
+    public String parse(String json, String wordName) {
         JsonParse jp = new JsonParse();
 
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jp.jsonRoot(json);
@@ -23,24 +23,20 @@ public class JsonResponseNodeTypeDecryption {
 
         for (String jsonMainItem : listOfMainItems) {
             fieldsIterator = jp.jsonRoot(jsonMainItem);
-            String dict = jp.findJsonValue("Dictionary", null, fieldsIterator);
+            String dict = jp.findJsonValue("ArticleId", null, fieldsIterator);
 
-            switch (dict) {
-                case "\"Dahl (Ru-Ru)\"":
-                    fieldsIterator = jp.jsonRoot(jsonMainItem);
-                    String dahlDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
-                    mapDictionaries.put(Constants.dahlDictionary, dahlDictMeaning);
-                    break;
-                case "\"Explanatory (Ru-Ru)\"":
-                    fieldsIterator = jp.jsonRoot(jsonMainItem);
-                    String explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
-                    mapDictionaries.put(Constants.explanatoryDictionary, explanDictMeaning);
-                    break;
-                case "\"UrbanDictionary (Ru-Ru)\"":
-                    fieldsIterator = jp.jsonRoot(jsonMainItem);
-                    String urbanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
-                    mapDictionaries.put(Constants.urbanDictionary, urbanDictMeaning);
-                    break;
+            if (dict.equals("\"Dahl (Ru-Ru)__" + wordName + "\"")) {
+                fieldsIterator = jp.jsonRoot(jsonMainItem);
+                String dahlDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                mapDictionaries.put(Constants.dahlDictionary, dahlDictMeaning);
+            } else if (dict.equals("\"Explanatory (Ru-Ru)__" + wordName + "\"")) {
+                fieldsIterator = jp.jsonRoot(jsonMainItem);
+                String explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                mapDictionaries.put(Constants.explanatoryDictionary, explanDictMeaning);
+            } else if (dict.equals("\"UrbanDictionary (Ru-Ru)__" + wordName + "\"")) {
+                fieldsIterator = jp.jsonRoot(jsonMainItem);
+                String urbanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                mapDictionaries.put(Constants.urbanDictionary, urbanDictMeaning);
             }
         }
 
