@@ -121,15 +121,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addWordToListView(Word word) {
-        //to not doubled already existed object (title)
+        //to not doubled already existed object (after added in db but before retrofit search)
         if (word.getWordDescription() != null) {
-            for (Word existWord : mDataSet) {
-                if (word.getWordName().equals(existWord.getWordName())) {
-                    existWord.setWordDescription(word.getWordDescription());
+            for (int i = 0; i < mDataSet.size(); i++) {
+                if (word.getWordName().equals(mDataSet.get(i).getWordName())) {
+                    mDataSet.get(i).setWordDescription(word.getWordDescription());
                 }
             }
+        } else {
+            mDataSet.add(word);
         }
-        mDataSet.add(word);
         adapter.refreshWordList(mDataSet);
     }
 
