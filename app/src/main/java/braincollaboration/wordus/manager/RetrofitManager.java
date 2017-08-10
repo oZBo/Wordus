@@ -44,15 +44,14 @@ public class RetrofitManager {
                 Word outWord = null;
                 try {
                     Response<ResponseBody> rb = myCall.execute();
-                    int code = rb.code();
-                    if (code == 200) {
+                    if (rb.isSuccessful()) {
                         Log.d(Constants.LOG_TAG, "search response is success");
                         String wordMeaning = new JsonResponseNodeTypeDecryption().parse(rb.body().string(), innerWord.getWordName().toLowerCase());
                         outWord = innerWord;
                         outWord.setWordDescription(wordMeaning);
-                    } else if (code == 404) {
+                    } else {
                         //in case of code 404 outWord returned "null" so user will see Toast "description not found" at doOnSuccess
-                        Log.e(Constants.LOG_TAG, "search response is success, but code 404");
+                        Log.e(Constants.LOG_TAG, "search response is success, but code: " + rb.code());
                     }
                 } catch (IOException e) {
                     Log.e(Constants.LOG_TAG, "search response failure error: " + e.toString());
