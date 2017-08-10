@@ -52,7 +52,7 @@ public class RetrofitManager {
                                 outWord.setWordDescription(wordMeaning);
 
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                Log.e(Constants.LOG_TAG, "success search response body error: " + e.toString());
                             }
                             return outWord;
                         }
