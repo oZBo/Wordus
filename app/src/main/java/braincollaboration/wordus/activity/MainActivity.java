@@ -121,6 +121,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addWordToListView(Word word) {
+        //to not doubled already existed object (title)
+        if (word.getWordDescription() != null) {
+            for (Word existWord : mDataSet) {
+                if (word.getWordName().equals(existWord.getWordName())) {
+                    existWord.setWordDescription(word.getWordDescription());
+                }
+            }
+        }
         mDataSet.add(word);
         adapter.refreshWordList(mDataSet);
     }

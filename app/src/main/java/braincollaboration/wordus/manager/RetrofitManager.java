@@ -47,7 +47,7 @@ public class RetrofitManager {
                         public Word execute() {
                             Word outWord = null;
                             try {
-                                String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
+                                String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string(), innerWord.getWordName().toLowerCase());
                                 outWord = innerWord;
                                 outWord.setWordDescription(wordMeaning);
 
