@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private WordAdapter adapter;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     private TextView wordDescriptionTextView;
+    private TextView wordNameTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initWidgets() {
         wordDescriptionTextView = (TextView) findViewById(R.id.bottom_sheet_content_text);
+        wordNameTextView = (TextView) findViewById(R.id.bottom_sheet_title_text);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
         recyclerView = (RecyclerViewWithFAB) findViewById(R.id.recycler_view);
@@ -97,14 +99,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         inputDialog.show();
     }
 
-    private void addWord(final String word) {
-        if (!word.equals("")) {
+    private void addWord(final String wordName) {
+        if (!wordName.equals("")) {
+            final Word word = makeWordValue(null, wordName, null);
             DatabaseManager.getInstance().addWordNameInDB(word, new DefaultBackgroundCallback<Boolean>() {
                 @Override
                 public void doOnSuccess(Boolean result) {
                     if (result) {
                         addWordToListView(word);
-                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word.getWordName() + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
                         searchWordDescriptionRetrofit(word);
                     } else {
                         Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
@@ -116,15 +119,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void addWordToListView(String word) {
-        Word wordClass = new Word();
-        wordClass.setWordName(word);
-        mDataSet.add(wordClass);
+    private Word makeWordValue(Word innerWord, String wordName, String wordDescription) {
+        Word word = null;
+        if (innerWord == null && wordName != null) {
+            word = new Word();
+            word.setWordName(wordName);
+            word.setWordDescription(wordDescription);
+        } else if ((innerWord != null && wordDescription != null) && (innerWord.getWordName() != null && wordName == null)) {
+            word = innerWord;
+            word.setWordDescription(wordDescription);
+        }
+        return word;
+    }
+
+    private void addWordToListView(Word word) {
+        mDataSet.add(word);
         adapter.refreshWordList(mDataSet);
     }
 
     @Override
     public void onItemClicked(Word word) {
+        wordNameTextView.setText(word.getWordName());
         wordDescriptionTextView.setText(word.getWordDescription() != null ? word.getWordDescription() : getString(R.string.empty_word_description));
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
@@ -145,26 +160,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void searchWordDescriptionRetrofit(final String wordName) {
-        RetrofitManager.getInstance().searchWordDescription(wordName, new DefaultBackgroundCallback<String>() {
+    private void searchWordDescriptionRetrofit(final Word word) {
+        RetrofitManager.getInstance().searchWordDescription(word, new DefaultBackgroundCallback<Word>() {
             @Override
-            public void doOnSuccess(String result) {
-                if (!result.equals("")) {
-                    addWordDescriptionInDB(wordName, result);
+            public void doOnSuccess(Word result) {
+                if (result != null && result.getWordDescription() != null) {
+                    addWordDescriptionInDB(result);
                 } else {
-                    Toast.makeText(MainActivity.this, wordName + " " + getString(R.string.description_not_found), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_not_found), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void addWordDescriptionInDB(final String wordName, String result) {
-        DatabaseManager.getInstance().addWordDescriptionInDB(wordName, result, new DefaultBackgroundCallback<Boolean>() {
+    private void addWordDescriptionInDB(final Word word) {
+        DatabaseManager.getInstance().addWordDescriptionInDB(word, new DefaultBackgroundCallback<Boolean>() {
             @Override
             public void doOnSuccess(Boolean result) {
                 if (result) {
                     loadDataFromDB();
-                    Toast.makeText(MainActivity.this, wordName + " " + getString(R.string.description_found), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_found), Toast.LENGTH_SHORT).show();
                 }
             }
         });

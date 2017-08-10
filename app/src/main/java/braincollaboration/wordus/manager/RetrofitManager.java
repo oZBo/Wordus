@@ -11,6 +11,7 @@ import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
 import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.background.IBackgroundTask;
+import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.Constants;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -24,39 +25,40 @@ public class RetrofitManager {
     private final static int START_INDEX = 0;
     private final static int PAGE_SIZE = 3;
 
-    private static RetrofitManager instance;
-
     private RetrofitManager() {
     }
 
+    private static final RetrofitManager ourInstance = new RetrofitManager();
+
     public static RetrofitManager getInstance() {
-        if (instance == null) {
-            instance = new RetrofitManager();
-        }
-        return instance;
+        return ourInstance;
     }
 
-    public void searchWordDescription(final String wordName, final DefaultBackgroundCallback<String> callback) {
+    public void searchWordDescription(final Word innerWord, final DefaultBackgroundCallback<Word> callback) {
         ABBYYLingvoAPI abbyyLingvoAPI = ApiController.getInstance();
-        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(wordName, DICTIONARY_ID, DICTIONARY_ID, SEARCH_ZONE, START_INDEX, PAGE_SIZE);
+        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(innerWord.getWordName(), DICTIONARY_ID, DICTIONARY_ID, SEARCH_ZONE, START_INDEX, PAGE_SIZE);
         myCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull final Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<String>() {
+                    Log.d(Constants.LOG_TAG, "search response is success");
+                    BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
                         @Override
-                        public String execute() {
-                            String wordMeaning = "";
+                        public Word execute() {
+                            Word outWord = null;
                             try {
-                                wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
+                                String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
+                                outWord = innerWord;
+                                outWord.setWordDescription(wordMeaning);
+
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            return wordMeaning;
+                            return outWord;
                         }
                     }, callback);
                 } else {
-                    Log.e(Constants.LOG_TAG, "search response isn't successful");
+                    Log.e(Constants.LOG_TAG, "search response isn't successful, response code is: " + response.code());
                 }
             }
 

@@ -24,15 +24,19 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "NAME";
     private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
 
-    private static WordusDatabaseHelper instance;
+    private static volatile WordusDatabaseHelper instance;
 
     private WordusDatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    public static synchronized WordusDatabaseHelper getInstance(Context context) {
+    private static WordusDatabaseHelper getInstance(Context context) {
         if (instance == null) {
-            instance = new WordusDatabaseHelper(context);
+            synchronized (WordusDatabaseHelper.class) {
+                if (instance == null) {
+                    instance = new WordusDatabaseHelper(context);
+                }
+            }
         }
         return instance;
     }
@@ -160,7 +164,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
             db.close();
             cursor.close();
         } catch (SQLException sqle) {
-            Log.d(Constants.LOG_TAG, "database unavailable");
+            Log.e(Constants.LOG_TAG, "database unavailable");
         }
 
         return dataSet;
@@ -171,7 +175,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         try {
             db = getInstance(context).getWritableDatabase();
         } catch (SQLException sqlEx) {
-            Log.d(Constants.LOG_TAG, "writable database unavailable");
+            Log.e(Constants.LOG_TAG, "writable database unavailable");
         }
         return db;
     }
@@ -181,7 +185,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         try {
             db = getInstance(context).getReadableDatabase();
         } catch (SQLException sqlEx) {
-            Log.d(Constants.LOG_TAG, "readable database unavailable");
+            Log.e(Constants.LOG_TAG, "readable database unavailable");
         }
         return db;
     }
