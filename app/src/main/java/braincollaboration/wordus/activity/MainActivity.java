@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addWord(final String wordName) {
         if (!wordName.equals("")) {
-            final Word word = makeWordValue(null, wordName, null);
+            final Word word = new Word();
+            word.setWordName(wordName);
             DatabaseManager.getInstance().addWordNameInDB(word, new DefaultBackgroundCallback<Boolean>() {
                 @Override
                 public void doOnSuccess(Boolean result) {
@@ -117,19 +118,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             Toast.makeText(MainActivity.this, R.string.empty_word_error, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private Word makeWordValue(Word innerWord, String wordName, String wordDescription) {
-        Word word = null;
-        if (innerWord == null && wordName != null) {
-            word = new Word();
-            word.setWordName(wordName);
-            word.setWordDescription(wordDescription);
-        } else if ((innerWord != null && wordDescription != null) && (innerWord.getWordName() != null && wordName == null)) {
-            word = innerWord;
-            word.setWordDescription(wordDescription);
-        }
-        return word;
     }
 
     private void addWordToListView(Word word) {
