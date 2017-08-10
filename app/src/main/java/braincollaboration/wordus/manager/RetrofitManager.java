@@ -36,36 +36,58 @@ public class RetrofitManager {
 
     public void searchWordDescription(final Word innerWord, final DefaultBackgroundCallback<Word> callback) {
         ABBYYLingvoAPI abbyyLingvoAPI = ApiController.getInstance();
-        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(innerWord.getWordName(), DICTIONARY_ID, DICTIONARY_ID, SEARCH_ZONE, START_INDEX, PAGE_SIZE);
-        myCall.enqueue(new Callback<ResponseBody>() {
+        final Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(innerWord.getWordName(), DICTIONARY_ID, DICTIONARY_ID, SEARCH_ZONE, START_INDEX, PAGE_SIZE);
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull final Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Log.d(Constants.LOG_TAG, "search response is success");
-                    BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
-                        @Override
-                        public Word execute() {
-                            Word outWord = null;
-                            try {
-                                String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string(), innerWord.getWordName().toLowerCase());
-                                outWord = innerWord;
-                                outWord.setWordDescription(wordMeaning);
-
-                            } catch (IOException e) {
-                                Log.e(Constants.LOG_TAG, "success search response body error: " + e.toString());
-                            }
-                            return outWord;
-                        }
-                    }, callback);
-                } else {
-                    Log.e(Constants.LOG_TAG, "search response isn't successful, response code is: " + response.code());
+            public Word execute() {
+                Word outWord = null;
+                try {
+                    Response<ResponseBody> rb = myCall.execute();
+                    if (rb.code() == 200) {
+                        Log.d(Constants.LOG_TAG, "search response is success");
+                        String wordMeaning = new JsonResponseNodeTypeDecryption().parse(rb.body().string(), innerWord.getWordName().toLowerCase());
+                        outWord = innerWord;
+                        outWord.setWordDescription(wordMeaning);
+                    } else if (rb.code() == 404) {
+                        //in case of code 404 outWord returned "null" so user will see Toast "description not found" at doOnSuccess
+                        Log.e(Constants.LOG_TAG, "search response is success, but code 404");
+                    }
+                } catch (IOException e) {
+                    Log.e(Constants.LOG_TAG, "success search response body error: " + e.toString());
                 }
+                return outWord;
             }
+        }, callback);
 
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
-            }
-        });
+//        myCall.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull final Response<ResponseBody> response) {
+//                if (response.isSuccessful()) {
+//                    Log.d(Constants.LOG_TAG, "search response is success");
+//                    BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
+//                        @Override
+//                        public Word execute() {
+//                            Word outWord = null;
+//                            try {
+//                                String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string(), innerWord.getWordName().toLowerCase());
+//                                outWord = innerWord;
+//                                outWord.setWordDescription(wordMeaning);
+//
+//                            } catch (IOException e) {
+//                                Log.e(Constants.LOG_TAG, "success search response body error: " + e.toString());
+//                            }
+//                            return outWord;
+//                        }
+//                    }, callback);
+//                } else {
+//                    Log.e(Constants.LOG_TAG, "search response isn't successful, response code: " + response.code());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+//                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
+//            }
+//        });
     }
 }
