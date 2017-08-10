@@ -1,6 +1,5 @@
 package braincollaboration.wordus.api;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -13,11 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import braincollaboration.wordus.utils.Constants;
-import braincollaboration.wordus.utils.PerformanceMeter;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class JsonParse {
     static String dictionary = "";
@@ -160,34 +154,4 @@ public class JsonParse {
         return rootNode != null ? rootNode.fields() : null;
     }
 
-    public static String findWordDescriptionRetrofit(String wordName) {
-        final String[] result = {null};
-        ABBYYLingvoAPI abbyyLingvoAPI = Controller.getInstance();
-
-        Call<ResponseBody> myCall = abbyyLingvoAPI.getWordMeaning(wordName, 1049, 1049, 1, 0, 3);
-
-        myCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.code() == 200) {
-                    Log.e(Constants.LOG_TAG, "search response is success");
-
-                    try {
-                        String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string());
-                        result[0] = wordMeaning;
-                    } catch (IOException e) {
-                        Log.e(Constants.LOG_TAG, "search RAW response error: " + e.toString());
-                    }
-                } else {
-                    Log.e(Constants.LOG_TAG, "search response isn't successful");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.e(Constants.LOG_TAG, "search response failure error: " + t.toString());
-            }
-        });
-        return result[0];
-    }
 }
