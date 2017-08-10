@@ -17,6 +17,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class RetrofitManager {
 
@@ -43,12 +44,13 @@ public class RetrofitManager {
                 Word outWord = null;
                 try {
                     Response<ResponseBody> rb = myCall.execute();
-                    if (rb.code() == 200) {
+                    int code = rb.code();
+                    if (code == 200) {
                         Log.d(Constants.LOG_TAG, "search response is success");
                         String wordMeaning = new JsonResponseNodeTypeDecryption().parse(rb.body().string(), innerWord.getWordName().toLowerCase());
                         outWord = innerWord;
                         outWord.setWordDescription(wordMeaning);
-                    } else if (rb.code() == 404) {
+                    } else if (code == 404) {
                         //in case of code 404 outWord returned "null" so user will see Toast "description not found" at doOnSuccess
                         Log.e(Constants.LOG_TAG, "search response is success, but code 404");
                     }
