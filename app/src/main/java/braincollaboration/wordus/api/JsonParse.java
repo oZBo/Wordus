@@ -13,7 +13,7 @@ import java.util.Map;
 
 import braincollaboration.wordus.utils.Constants;
 
-public class JsonParse {
+class JsonParse {
     static String dictionary = "";
 
     void findDescription(String dictionary) {

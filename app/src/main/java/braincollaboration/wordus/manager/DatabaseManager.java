@@ -37,15 +37,15 @@ public class DatabaseManager {
         BackgroundManager.getInstance().doUiBlockingBackgroundTask(loadWordsTask, callback);
     }
 
-    public void addWordNameInDB(final String word, DefaultBackgroundCallback<Boolean> callback) {
+    public void addWordNameInDB(final Word word, DefaultBackgroundCallback<Boolean> callback) {
         IBackgroundTask<Boolean> backgroundTask = new IBackgroundTask<Boolean>() {
             @Override
             public Boolean execute() {
                 SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                if (db != null && !WordusDatabaseHelper.isDBContainAWord(db, word)) {
+                if (db != null && !WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
                     db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
                     if (db != null) {
-                        WordusDatabaseHelper.addWordNameInDB(db, word);
+                        WordusDatabaseHelper.addWordNameInDB(db, word.getWordName());
                         return true;
                     }
                 }
@@ -55,15 +55,15 @@ public class DatabaseManager {
         BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);
     }
 
-    public void addWordDescriptionInDB(final String wordName, final String wordDescription, DefaultBackgroundCallback<Boolean> callback) {
+    public void addWordDescriptionInDB(final Word word, DefaultBackgroundCallback<Boolean> callback) {
         IBackgroundTask<Boolean> backgroundTask = new IBackgroundTask<Boolean>() {
             @Override
             public Boolean execute() {
                 SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
-                if (db != null && WordusDatabaseHelper.isDBContainAWord(db, wordName)) {
+                if (db != null && WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
                     db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
                     if (db != null) {
-                        WordusDatabaseHelper.addWordDescriptionInDB(db, wordName, wordDescription);
+                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription());
                         return true;
                     }
                 }

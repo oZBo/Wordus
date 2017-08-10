@@ -1,5 +1,6 @@
 package braincollaboration.wordus.api;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -29,13 +30,13 @@ public class ApiController {
 
     private static String accessToken;
     private static Request accessTokenRequest;
-    private static ABBYYLingvoAPI apiInterfaceInstance;
+    private static final ABBYYLingvoAPI apiInterfaceInstance = getApi();
 
     public static ABBYYLingvoAPI getInstance() {
-        if (apiInterfaceInstance == null) {
-            apiInterfaceInstance = getApi();
-        }
         return apiInterfaceInstance;
+    }
+
+    private ApiController() {
     }
 
     private static ABBYYLingvoAPI getApi() {
@@ -58,7 +59,7 @@ public class ApiController {
         OkHttpClient.Builder okHttpBuilder = new OkHttpClient().newBuilder();
         okHttpBuilder.interceptors().add(new Interceptor() {
             @Override
-            public okhttp3.Response intercept(Chain chain) throws IOException {
+            public okhttp3.Response intercept(@NonNull Chain chain) throws IOException {
                 Request originalRequest = chain.request();
 
                 // Nothing to add to intercepted request if:
@@ -78,19 +79,19 @@ public class ApiController {
         okHttpBuilder.authenticator(new Authenticator() {
             @Nullable
             @Override
-            public Request authenticate(Route route, okhttp3.Response response) throws IOException {
+            public Request authenticate(@NonNull Route route, @NonNull okhttp3.Response response) throws IOException {
                 // Refresh your access_token using a synchronous api request
                 ABBYYLingvoAPI abbyyLingvoAPI = getApi();
 
                 Call<ResponseBody> myCall = abbyyLingvoAPI.getBasicToken();
-                Response<ResponseBody> response1 = null;
+                Response<ResponseBody> response1;
                 try {
                     response1 = myCall.execute();
                     if (response1.isSuccessful()) {
                         accessToken = response1.body().string();
-                        Log.e(Constants.LOG_TAG, "basic response is success, got accessToken");
+                        Log.d(Constants.LOG_TAG, "basic response is success, got accessToken");
                     } else {
-                        Log.e(Constants.LOG_TAG, "basic response isn't successful");
+                        Log.e(Constants.LOG_TAG, "basic response isn't successful, response code is: " + response1.code());
                     }
                 } catch (IOException e) {
                     Log.e(Constants.LOG_TAG, "basic response isn't successful cause error: " + e.toString());
@@ -138,8 +139,7 @@ public class ApiController {
                 }
             });
 
-            OkHttpClient okHttpClient = okHttpBuilder.build();
-            return okHttpClient;
+            return okHttpBuilder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

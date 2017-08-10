@@ -1,20 +1,14 @@
 package braincollaboration.wordus.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import braincollaboration.wordus.utils.Constants;
-import braincollaboration.wordus.utils.PerformanceMeter;
 
 public class JsonResponseNodeTypeDecryption {
 
-    private String dahlDictMeaning;
-    private String explanDictMeaning;
-    private String urbanDictMeaning;
     private Map<String, String> mapDictionaries = new HashMap<>();
     private String wordMeaning = "";
 
@@ -34,17 +28,17 @@ public class JsonResponseNodeTypeDecryption {
             switch (dict) {
                 case "\"Dahl (Ru-Ru)\"":
                     fieldsIterator = jp.jsonRoot(jsonMainItem);
-                    dahlDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                    String dahlDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
                     mapDictionaries.put(Constants.dahlDictionary, dahlDictMeaning);
                     break;
                 case "\"Explanatory (Ru-Ru)\"":
                     fieldsIterator = jp.jsonRoot(jsonMainItem);
-                    explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                    String explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
                     mapDictionaries.put(Constants.explanatoryDictionary, explanDictMeaning);
                     break;
                 case "\"UrbanDictionary (Ru-Ru)\"":
                     fieldsIterator = jp.jsonRoot(jsonMainItem);
-                    urbanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                    String urbanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
                     mapDictionaries.put(Constants.urbanDictionary, urbanDictMeaning);
                     break;
             }
