@@ -28,17 +28,19 @@ public class DatabaseManager {
     }
 
     public void getWordsList(@NonNull DefaultBackgroundCallback<List<Word>> callback) {
-        IBackgroundTask<List<Word>> loadWordsTask = new IBackgroundTask<List<Word>>() {
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<List<Word>>() {
+
             @Override
             public List<Word> execute() {
                 return WordusDatabaseHelper.getDataSet(WordusApp.getCurrentActivity().getApplicationContext());
             }
-        };
-        BackgroundManager.getInstance().doUiBlockingBackgroundTask(loadWordsTask, callback);
+        }, callback);
+
     }
 
     public void addWordNameInDB(final Word word, DefaultBackgroundCallback<Boolean> callback) {
-        IBackgroundTask<Boolean> backgroundTask = new IBackgroundTask<Boolean>() {
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
+
             @Override
             public Boolean execute() {
                 SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
@@ -51,12 +53,12 @@ public class DatabaseManager {
                 }
                 return false;
             }
-        };
-        BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);
+        }, callback);
     }
 
     public void addWordDescriptionInDB(final Word word, DefaultBackgroundCallback<Boolean> callback) {
-        IBackgroundTask<Boolean> backgroundTask = new IBackgroundTask<Boolean>() {
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
+
             @Override
             public Boolean execute() {
                 SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
@@ -69,12 +71,12 @@ public class DatabaseManager {
                 }
                 return false;
             }
-        };
-        BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);
+        }, callback);
     }
 
     public void deleteWord(final Word word, DefaultBackgroundCallback<Void> callback) {
-        IBackgroundTask<Void> backgroundTask = new IBackgroundTask<Void>() {
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Void>() {
+
             @Override
             public Void execute() {
                 SQLiteDatabase db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
@@ -83,8 +85,7 @@ public class DatabaseManager {
                 }
                 return null;
             }
-        };
-        BackgroundManager.getInstance().doUiBlockingBackgroundTask(backgroundTask, callback);
+        }, callback);
     }
 
 }
