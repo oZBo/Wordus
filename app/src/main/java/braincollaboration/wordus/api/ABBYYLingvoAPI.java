@@ -11,9 +11,9 @@ import retrofit2.http.Query;
 public interface ABBYYLingvoAPI {
 
     @Headers("Authorization: Basic " + Constants.APP_KEY)
-    @POST("/api/v1.1/authenticate")
+    @POST("api/v1.1/authenticate")
     Call<ResponseBody> getBasicToken();
 
-    @GET("/api/v1/Search")
+    @GET("api/v1/Search")
     Call<ResponseBody> getWordMeaning (@Query("text") String word, @Query("srcLang") int srcLang, @Query("dstLang") int dstLang, @Query("searchZone") int searchZone, @Query("startIndex") int startIndex, @Query("pageSize") int pageSize);
 }

@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RetrofitManager.getInstance().searchWordDescription(word, new DefaultBackgroundCallback<Word>() {
             @Override
             public void doOnSuccess(Word result) {
-                if (result != null && result.getWordDescription() != null) {
+                if (result != null) {
                     addWordDescriptionInDB(result);
                 } else {
                     Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_not_found), Toast.LENGTH_SHORT).show();
