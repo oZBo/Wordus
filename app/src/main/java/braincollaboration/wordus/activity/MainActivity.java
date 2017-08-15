@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.List;
 
 import braincollaboration.wordus.R;
@@ -25,6 +27,7 @@ import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
 import braincollaboration.wordus.view.dialog.ConfirmationDialog;
 import braincollaboration.wordus.view.dialog.TextInputDialog;
 import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
+import io.fabric.sdk.android.Fabric;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         loadDataFromDB();
     }
