@@ -2,7 +2,9 @@ package braincollaboration.wordus.manager;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import java.io.IOException;
+
 import braincollaboration.wordus.api.ABBYYLingvoAPI;
 import braincollaboration.wordus.api.ApiController;
 import braincollaboration.wordus.api.JsonResponseNodeTypeDecryption;
