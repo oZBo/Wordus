@@ -8,9 +8,9 @@
     <application
         android:name=".WordusApp"
         android:allowBackup="true"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/app_ico"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_search_white_24dp"
+        android:roundIcon="@drawable/app_ico"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
