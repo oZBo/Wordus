@@ -160,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         confirmationDialog.show();
-
     }
 
     private void searchWordDescriptionRetrofit(final Word word) {
