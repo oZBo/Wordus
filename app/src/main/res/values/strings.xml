@@ -22,5 +22,6 @@
     <string name="description_found">description found</string>
     <string name="description_not_found">description not found</string>
     <string name="empty_word_description">Sorry, no meaning was found</string>
+    <string name="input_dialog_header">Word to find</string>
 
 </resources>
