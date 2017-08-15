@@ -18,8 +18,6 @@ public class ConfirmationDialog extends DialogBase {
         initDoubleButtonDialog(R.string.ok, R.string.cancel, callback);
     }
 
-
-
     @Override
     protected int getLayoutResId() {
         return 0;

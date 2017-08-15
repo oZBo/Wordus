@@ -52,8 +52,6 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
         viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wordsList.remove(item);
-                WordAdapter.super.setItemList(wordsList);
                 actionsCallback.onItemDeleteButtonClicked(item);
             }
         });

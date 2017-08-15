@@ -153,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 DatabaseManager.getInstance().deleteWord(word, new DefaultBackgroundCallback<Void>() {
                     @Override
                     public void doOnSuccess(Void result) {
+                        mDataSet.remove(word);
+                        adapter.setItemList(mDataSet);
                     }
                 });
             }
