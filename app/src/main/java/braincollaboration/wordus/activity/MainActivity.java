@@ -1,9 +1,13 @@
 package braincollaboration.wordus.activity;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,6 +26,10 @@ import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
+import braincollaboration.wordus.utils.Constants;
+import braincollaboration.wordus.utils.IInternetStatusBroadcastReceiverCallback;
+import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
+import braincollaboration.wordus.utils.InternetUtil;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
 import braincollaboration.wordus.view.dialog.ConfirmationDialog;
@@ -30,7 +38,7 @@ import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
 import io.fabric.sdk.android.Fabric;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback, IInternetStatusBroadcastReceiverCallback {
 
     private RecyclerViewWithFAB recyclerView;
     private FloatingActionButton fab;
@@ -39,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     private TextView wordDescriptionTextView;
     private TextView wordNameTextView;
+    private InternetStatusBroadcastReceiver mReceiver = new InternetStatusBroadcastReceiver(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         loadDataFromDB();
+
+        // Registers BroadcastReceiver to track network connection changes.
+        this.registerReceiver(mReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     private void loadDataFromDB() {
@@ -113,9 +125,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (result) {
                         addWordToListView(word);
                         Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word.getWordName() + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
-                        searchWordDescriptionRetrofit(word);
+                        if (InternetUtil.isInternetTurnOn(MainActivity.this)) {
+                            searchWordDescriptionRetrofit(word);
+                        } else {
+                            Toast.makeText(MainActivity.this, R.string.no_connection_now_will_be_found_later, Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(WordusApp.getCurrentActivity(), R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -126,15 +142,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addWordToListView(Word word) {
         //to not doubled already existed object (after added in db but before retrofit search)
-        if (word.getWordDescription() != null) {
-            for (int i = 0; i < mDataSet.size(); i++) {
-                if (word.getWordName().equals(mDataSet.get(i).getWordName())) {
-                    mDataSet.get(i).setWordDescription(word.getWordDescription());
-                }
+        for (int i = 0; i < mDataSet.size(); i++) {
+            Word w = mDataSet.get(i);
+            if (word.getWordName().equals(w.getWordName())) {
+                mDataSet.remove(w);
             }
-        } else {
-            mDataSet.add(word);
         }
+        mDataSet.add(word);
         adapter.refreshWordList(mDataSet);
     }
 
@@ -168,8 +182,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result);
+                    if (result.getWordDescription() == null) {
+                        Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_not_found), Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_not_found), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.no_connection_now_will_be_found_later), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -181,10 +198,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void doOnSuccess(Boolean result) {
                 if (result) {
                     addWordToListView(word);
-                    Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_found), Toast.LENGTH_SHORT).show();
+                    if (word.getWordDescription() != null) {
+                        Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_found), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unregisters BroadcastReceiver when app is destroyed.
+        if (mReceiver != null) {
+            this.unregisterReceiver(mReceiver);
+        }
+    }
+
+    @Override
+    public void internetIsOn() {
+        DatabaseManager.getInstance().getNotFoundWordsList(new DefaultBackgroundCallback<List<Word>>() {
+            @Override
+            public void doOnSuccess(List<Word> result) {
+                if (!result.isEmpty()) {
+                    for (Word word : result) {
+                        searchWordDescriptionRetrofit(word);
+                    }
+                }
+            }
+        });
+
+    }
 }
