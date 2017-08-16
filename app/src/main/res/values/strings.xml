@@ -5,6 +5,7 @@
     <string name="search_dialog_intype">Введите слово:</string>
     <string name="empty_word_error">Введите слово!</string>
     <string name="word_already_contains_in_db">This word already exists</string>
+    <string name="no_connection_now_will_be_found_later">No connection now. Will be found later</string>
     <string name="database_unavailable">Database unavailable. Try one more time!</string>
     <string name="word_">word</string>
     <string name="_successfully_added_in_db">added</string>

@@ -4,10 +4,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.StringRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 
 import braincollaboration.wordus.R;
+import braincollaboration.wordus.utils.Constants;
 
 import static android.content.DialogInterface.OnClickListener;
 
@@ -63,6 +66,13 @@ public abstract class DialogBase {
     public void show() {
         if (dialogBuilder != null) {
             dialog = dialogBuilder.create();
+            if (getLayoutResId() == R.layout.alert_dialog_text_input) {
+                try {
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                } catch (NullPointerException e) {
+                    Log.d(Constants.LOG_TAG, "softInput in dialog error");
+                }
+            }
             dialog.show();
         }
     }

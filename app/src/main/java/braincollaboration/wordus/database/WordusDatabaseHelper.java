@@ -23,6 +23,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NAME = "NAME";
     private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
+    private static final String COLUMN_HAS_LOOKED_FOR = "HAS_LOOKED_FOR";
 
     private static volatile WordusDatabaseHelper instance;
 
@@ -55,7 +56,8 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 1) {
             db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + COLUMN_NAME + " TEXT, "
-                    + COLUMN_DESCRIPTION + " TEXT);");
+                    + COLUMN_DESCRIPTION + " TEXT, "
+                    + COLUMN_HAS_LOOKED_FOR + " INTEGER);");
         }
     }
 
@@ -126,16 +128,18 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         return contain;
     }
 
-    public static void addWordNameInDB(SQLiteDatabase db, String s) {
+    public static void addWordNameInDB(SQLiteDatabase db, String s, Boolean isDefine) {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, s);
+        wordNameValue = makeWordValue(wordNameValue, COLUMN_HAS_LOOKED_FOR, !isDefine ? 0 : 1);
         insertWord(db, wordNameValue);
         Log.d(Constants.LOG_TAG, "word name added in db");
 
         db.close();
     }
 
-    public static void addWordDescriptionInDB(SQLiteDatabase db, String wordName, String wordDescription) {
+    public static void addWordDescriptionInDB(SQLiteDatabase db, String wordName, String wordDescription, Boolean isDefine) {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_DESCRIPTION, wordDescription);
+        wordNameValue = makeWordValue(wordNameValue, COLUMN_HAS_LOOKED_FOR, !isDefine ? 0 : 1);
         updateWord(db, wordNameValue, COLUMN_NAME, wordName);
         Log.d(Constants.LOG_TAG, "word description added in db");
 
@@ -147,17 +151,51 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = getInstance(context).getReadableDatabase();
             Cursor cursor = db.query(TABLE_NAME,
-                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION},
+                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAS_LOOKED_FOR},
                     null, null, null, null, null);
             if (cursor.moveToFirst()) {
                 Word word = new Word();
                 word.setWordName(cursor.getString(0));
                 word.setWordDescription(cursor.getString(1));
+                word.setHasLookedFor(cursor.getInt(2) != 0);
                 dataSet.add(word);
                 while (cursor.moveToNext()) {
                     word = new Word();
                     word.setWordName(cursor.getString(0));
                     word.setWordDescription(cursor.getString(1));
+                    word.setHasLookedFor(cursor.getInt(2) != 0);
+                    dataSet.add(word);
+                }
+            }
+            db.close();
+            cursor.close();
+        } catch (SQLException sqle) {
+            Log.e(Constants.LOG_TAG, "database unavailable");
+        }
+
+        return dataSet;
+    }
+
+    public static List<Word> getNotFoundWordDataSet(Context context) {
+        List<Word> dataSet = new ArrayList<>();
+        try {
+            SQLiteDatabase db = getInstance(context).getReadableDatabase();
+            Cursor cursor = db.query(TABLE_NAME,
+                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAS_LOOKED_FOR},
+                    COLUMN_HAS_LOOKED_FOR + " = ?",
+                    new String[]{Integer.toString(0)},
+                    null, null, null);
+            if (cursor.moveToFirst()) {
+                Word word = new Word();
+                word.setWordName(cursor.getString(0));
+                word.setWordDescription(cursor.getString(1));
+                word.setHasLookedFor(cursor.getInt(2) != 0);
+                dataSet.add(word);
+                while (cursor.moveToNext()) {
+                    word = new Word();
+                    word.setWordName(cursor.getString(0));
+                    word.setWordDescription(cursor.getString(1));
+                    word.setHasLookedFor(cursor.getInt(2) != 0);
                     dataSet.add(word);
                 }
             }

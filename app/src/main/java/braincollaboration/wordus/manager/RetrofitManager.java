@@ -52,6 +52,7 @@ public class RetrofitManager {
                                 if (wordMeaning != null) {
                                     outWord = innerWord;
                                     outWord.setWordDescription(wordMeaning);
+                                    outWord.setHasLookedFor(true);
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -65,7 +66,8 @@ public class RetrofitManager {
 
                         @Override
                         public Word execute() {
-                            return null;
+                            innerWord.setHasLookedFor(true);
+                            return innerWord;
                         }
                     }, callback);
                 }
