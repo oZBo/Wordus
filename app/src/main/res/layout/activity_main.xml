@@ -29,12 +29,13 @@
             android:background="@color/colorAccent"
             android:gravity="center"
             android:text="@string/bottom_sheet_peek"
-            android:textColor="@android:color/white"
+            android:textColor="@color/almostBlackTextColor"
             android:textSize="@dimen/default_title_text_size" />
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/word_description_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
