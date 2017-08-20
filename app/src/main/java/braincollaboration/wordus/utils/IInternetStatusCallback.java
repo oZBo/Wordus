@@ -1,6 +1,6 @@
 package braincollaboration.wordus.utils;
 
-public interface IInternetStatusBroadcastReceiverCallback {
+public interface IInternetStatusCallback {
 
     void internetIsOn();
 }

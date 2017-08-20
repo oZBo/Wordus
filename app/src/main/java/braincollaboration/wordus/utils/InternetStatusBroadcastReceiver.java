@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.util.Log;
 
 public class InternetStatusBroadcastReceiver extends BroadcastReceiver {
-    IInternetStatusBroadcastReceiverCallback callback;
+    IInternetStatusCallback callback;
 
-    public InternetStatusBroadcastReceiver(IInternetStatusBroadcastReceiverCallback callBack) {
+    public InternetStatusBroadcastReceiver(IInternetStatusCallback callBack) {
         this.callback = callBack;
     }
 

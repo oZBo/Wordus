@@ -1,5 +1,7 @@
 package braincollaboration.wordus.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -14,9 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.List;
 
+import braincollaboration.wordus.utils.Constants;
+import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
+import braincollaboration.wordus.utils.InternetStatusGCM;
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
@@ -26,9 +33,7 @@ import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
-import braincollaboration.wordus.utils.Constants;
-import braincollaboration.wordus.utils.IInternetStatusBroadcastReceiverCallback;
-import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
+import braincollaboration.wordus.utils.IInternetStatusCallback;
 import braincollaboration.wordus.utils.InternetUtil;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
@@ -38,7 +43,7 @@ import braincollaboration.wordus.view.dialog.base.DefaultDialogCallback;
 import io.fabric.sdk.android.Fabric;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback, IInternetStatusBroadcastReceiverCallback {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, IWordAdapterCallback, IInternetStatusCallback {
 
     private RecyclerViewWithFAB recyclerView;
     private FloatingActionButton fab;
@@ -47,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     private TextView wordDescriptionTextView;
     private TextView wordNameTextView;
-    private InternetStatusBroadcastReceiver mReceiver = new InternetStatusBroadcastReceiver(this);
+    private InternetStatusBroadcastReceiver mBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         loadDataFromDB();
-
-        // Registers BroadcastReceiver to track network connection changes.
-        this.registerReceiver(mReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     private void loadDataFromDB() {
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (mDataSet == null) {
                     initWidgets();
                     configureBottomSheet();
+                    initBackgroundSearch();
                     initRecyclerView(result);
                 } else {
                     adapter.refreshWordList(result);
@@ -88,6 +91,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         bottomSheetBehavior.setBottomSheetCallback(new BottomScreenBehavior(fab));
     }
+
+    private void initBackgroundSearch() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode == ConnectionResult.SUCCESS) {
+            initGCM();
+        } else {
+            initBroadcastReceiver();
+        }
+    }
+
+    private void initGCM() {
+        InternetStatusGCM.scheduleSync(this, this);
+    }
+
+    private void initBroadcastReceiver() {
+        mBroadcastReceiver = new InternetStatusBroadcastReceiver(this);
+        this.registerReceiver(mBroadcastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
 
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
@@ -210,13 +232,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         // Unregisters BroadcastReceiver when app is destroyed.
-        if (mReceiver != null) {
-            this.unregisterReceiver(mReceiver);
+        if (mBroadcastReceiver != null) {
+            this.unregisterReceiver(mBroadcastReceiver);
         }
     }
 
     @Override
     public void internetIsOn() {
+        // to search words which have been added without internet
         DatabaseManager.getInstance().getNotFoundWordsList(new DefaultBackgroundCallback<List<Word>>() {
             @Override
             public void doOnSuccess(List<Word> result) {
@@ -228,5 +251,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    private void cancelGCMTask() {
+        InternetStatusGCM.cancelGCMTask(this);
     }
 }
