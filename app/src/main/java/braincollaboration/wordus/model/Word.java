@@ -34,7 +34,7 @@ public class Word implements Categorizable {
         this.id = id;
     }
 
-    public boolean isHasLookedFor() {
+    public boolean getHasLookedFor() {
         return hasLookedFor;
     }
 
