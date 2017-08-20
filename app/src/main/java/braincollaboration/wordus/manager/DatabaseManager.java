@@ -2,7 +2,6 @@ package braincollaboration.wordus.manager;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.List;
 
@@ -12,7 +11,6 @@ import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.background.IBackgroundTask;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.Constants;
 
 /**
  * Created by evhenii on 13.07.17.
@@ -60,7 +58,7 @@ public class DatabaseManager {
                 if (db != null && !WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
                     db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
                     if (db != null) {
-                        WordusDatabaseHelper.addWordNameInDB(db, word.getWordName(), word.isHasLookedFor());
+                        WordusDatabaseHelper.addWordNameInDB(db, word.getWordName(), word.getHasLookedFor());
                         return true;
                     }
                 }
@@ -78,7 +76,7 @@ public class DatabaseManager {
                 if (db != null && WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
                     db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
                     if (db != null) {
-                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.isHasLookedFor());
+                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.getHasLookedFor());
                         return true;
                     }
                 }

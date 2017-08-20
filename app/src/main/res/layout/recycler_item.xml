@@ -14,7 +14,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/base_margin"
         android:layout_marginRight="@dimen/base_margin"
-        android:text="@string/hello_world"
+        android:text="@string/word_"
         android:textColor="@color/almostBlackTextColor"
         android:textSize="@dimen/default_text_size" />
 

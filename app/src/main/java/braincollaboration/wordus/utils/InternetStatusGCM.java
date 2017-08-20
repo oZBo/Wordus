@@ -11,6 +11,7 @@ import com.google.android.gms.gcm.OneoffTask;
 import com.google.android.gms.gcm.Task;
 import com.google.android.gms.gcm.TaskParams;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
@@ -23,6 +24,9 @@ import braincollaboration.wordus.model.Word;
 
 public class InternetStatusGCM extends GcmTaskService {
     private static IInternetStatusCallback callback;
+    private static int wordsSize;
+    private static int rawWordsCount = 0;
+    private static ArrayList<String> foundWordsList = new ArrayList<>();
 
     @Override
     public int onRunTask(TaskParams taskParams) {
@@ -31,7 +35,7 @@ public class InternetStatusGCM extends GcmTaskService {
                 Log.d(Constants.LOG_TAG, "task start");
                 if (callback == null) {
                     //this method not refresh MainActivity (only suitable for destroyed application)
-                    getNotFoundWordList(this.getApplicationContext());
+                    getNotFoundWordList(this);
                 } else {
                     // to refresh recyclerView and show Toasts if application is alive
                     callback.internetIsOn();
@@ -54,7 +58,9 @@ public class InternetStatusGCM extends GcmTaskService {
             @Override
             public void doOnSuccess(List<Word> result) {
                 if (!result.isEmpty()) {
+                    wordsSize = result.size();
                     for (Word word : result) {
+                        rawWordsCount++;
                         searchWordDescriptionRetrofit(word, context);
                     }
                 }
@@ -85,7 +91,7 @@ public class InternetStatusGCM extends GcmTaskService {
                 if (db != null && WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
                     db = WordusDatabaseHelper.getWritableDB(context);
                     if (db != null) {
-                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.isHasLookedFor());
+                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.getHasLookedFor());
                         return true;
                     }
                 }
@@ -95,17 +101,20 @@ public class InternetStatusGCM extends GcmTaskService {
             @Override
             public void doOnSuccess(Boolean result) {
                 if (result) {
-                    ifLastWordMakeNotification();
                     if (word.getWordDescription() != null) {
+                        foundWordsList.add(word.getWordName());
                         Log.d(Constants.LOG_TAG, word.getWordName() + " " + getString(R.string.description_found));
+                    }
+                    if (wordsSize == rawWordsCount) {
+                        makeNotification();
                     }
                 }
             }
         });
     }
 
-    private void ifLastWordMakeNotification() {
-        // notification procedure
+    private void makeNotification() {
+        MyNotification.sendInboxStyleNotification(this, foundWordsList, wordsSize);
     }
 
     public static void scheduleSync(Context context, IInternetStatusCallback callback) {

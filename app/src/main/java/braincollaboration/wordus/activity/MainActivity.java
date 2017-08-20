@@ -150,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (InternetUtil.isInternetTurnOn(MainActivity.this)) {
                             searchWordDescriptionRetrofit(word);
                         } else {
-                            Toast.makeText(MainActivity.this, R.string.no_connection_now_will_be_found_later, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.no_connection_now_will_be_found_later, Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        Toast.makeText(MainActivity.this, R.string.word_already_contains_in_db, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, R.string.word_already_contains_in_db, Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -177,7 +177,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onItemClicked(Word word) {
         wordNameTextView.setText(word.getWordName());
-        wordDescriptionTextView.setText(word.getWordDescription() != null ? word.getWordDescription() : getString(R.string.empty_word_description));
+
+        if (word.getWordDescription() == null) {
+            if (!word.getHasLookedFor()) {
+                wordDescriptionTextView.setText(getString(R.string.empty_word_description_not_found));
+            } else {
+                wordDescriptionTextView.setText(getString(R.string.empty_word_description_not_exist));
+            }
+        } else {
+            wordDescriptionTextView.setText(word.getWordDescription());
+        }
+
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -191,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void doOnSuccess(Void result) {
                         mDataSet.remove(word);
                         adapter.setItemList(mDataSet);
+                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word.getWordName() + " " + getString(R.string._successfully_deleted_from_db), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
