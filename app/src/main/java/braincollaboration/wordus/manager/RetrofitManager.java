@@ -43,25 +43,31 @@ public class RetrofitManager {
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull final Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
-
                         @Override
                         public Word execute() {
                             Word outWord = null;
+                            String wordMeaning = null;
+
                             try {
-                                String wordMeaning = new JsonResponseNodeTypeDecryption().parse(response.body().string(), innerWord.getWordName());
-                                if (wordMeaning != null) {
-                                    outWord = innerWord;
-                                    outWord.setWordDescription(wordMeaning);
-                                    outWord.setHasLookedFor(true);
-                                }
+                                wordMeaning = response.body().string();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                Log.e(Constants.LOG_TAG, "search response is success. but try-catch error: " + e.toString());
                             }
+
+                            wordMeaning = new JsonResponseNodeTypeDecryption().parse(wordMeaning, innerWord.getWordName());
+                            if (wordMeaning != null) {
+                                Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description found");
+                                outWord = innerWord;
+                                outWord.setWordDescription(wordMeaning);
+                                outWord.setHasLookedFor(true);
+                            }
+
                             return outWord;
                         }
                     }, callback);
                 } else {
                     Log.e(Constants.LOG_TAG, "search response isn't successful, code: " + response.code());
+                    Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description not found");
                     BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
 
                         @Override

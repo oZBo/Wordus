@@ -1,12 +1,12 @@
 package braincollaboration.wordus.utils;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 
 import java.util.ArrayList;
 
@@ -18,56 +18,57 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class MyNotification {
 
     public static void sendInboxStyleNotification(Context context, ArrayList<String> foundWordsList, int wordsSize) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
         Resources res = context.getResources();
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        Notification.Builder builder = new Notification.Builder(context);
-        Notification notification;
-        if (foundWordsList.size() > 1) {
-            if (foundWordsList.size() < 5) {
-                builder.setTicker("Слова найдены!")
-                        .setContentTitle(foundWordsList.size() + " слова найдено")
-                        .setContentText("Найдено " + foundWordsList.size() + " описания из " + wordsSize + " слов")
-                        .setSmallIcon(R.drawable.notify_app_ico_for_api21)
-                        .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico))
-                        .addAction(R.drawable.ic_play_white_36dp, "Посмотреть", pIntent);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationCompat.InboxStyle notificationInbox;
+
+
+        int size = foundWordsList.size();
+        if (size > 1) {
+            builder.setAutoCancel(true)
+                    .setTicker("Слова найдены!")
+                    .setSmallIcon(R.drawable.notify_app_ico_for_api21)
+                    .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico))
+                    .addAction(R.drawable.ic_play_white_36dp, "Посмотреть", pIntent)
+                    .setDefaults(NotificationCompat.DEFAULT_ALL);
+            if (size < 5) {
+                builder.setContentTitle(foundWordsList.size() + " слова найдено")
+                        .setContentText("Найдено " + foundWordsList.size() + " описания из " + wordsSize + " слов");
             } else {
-                builder.setTicker("Слова найдены!")
-                        .setContentTitle(foundWordsList.size() + " слов найдено")
-                        .setContentText("Найдено " + foundWordsList.size() + " описаний из " + wordsSize + " слов")
-                        .setSmallIcon(R.drawable.notify_app_ico_for_api21)
-                        .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico))
-                        .addAction(R.drawable.ic_play_white_36dp, "Посмотреть", pIntent);
+                builder.setContentTitle(foundWordsList.size() + " слов найдено")
+                        .setContentText("Найдено " + foundWordsList.size() + " описаний из " + wordsSize + " слов");
             }
 
-            if (foundWordsList.size() == 2) {
-                notification = new Notification.InboxStyle(builder)
+            notificationInbox = new NotificationCompat.InboxStyle(builder);
+            if (size > 1) {
+                notificationInbox
                         .addLine(foundWordsList.get(0))
-                        .addLine(foundWordsList.get(1))
-                        .build();
-            } else if (foundWordsList.size() == 3) {
-                notification = new Notification.InboxStyle(builder)
-                        .addLine(foundWordsList.get(0))
-                        .addLine(foundWordsList.get(1))
-                        .addLine(foundWordsList.get(2))
-                        .build();
-            } else if (foundWordsList.size() == 4) {
-                notification = new Notification.InboxStyle(builder)
-                        .addLine(foundWordsList.get(0))
-                        .addLine(foundWordsList.get(1))
-                        .addLine(foundWordsList.get(2))
-                        .addLine(foundWordsList.get(3))
-                        .build();
-            } else {
-                notification = new Notification.InboxStyle(builder)
-                        .addLine(foundWordsList.get(0))
-                        .addLine(foundWordsList.get(1))
-                        .addLine(foundWordsList.get(2))
-                        .addLine(foundWordsList.get(3))
-                        .setSummaryText("+" + (foundWordsList.size() - 4) + " еще").build();
+                        .addLine(foundWordsList.get(1));
+            }
+
+            if (size > 2) {
+                notificationInbox
+                        .addLine(foundWordsList.get(2));
+            }
+
+            if (size > 3) {
+                notificationInbox
+                        .addLine(foundWordsList.get(3));
+            }
+
+            if (size > 4) {
+                notificationInbox
+                        .setSummaryText("+" + (size - 4) + " еще");
 
             }
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            //notificationInbox.defaults = NotificationCompat.DEFAULT_ALL;
+            //notificationInbox.build();
+            //notificationInbox.flags |= NotificationCompat.FLAG_AUTO_CANCEL;
+            notificationManager.notify(Constants.DESCRIPTION_FOUND_NOTIFY_ID, notificationInbox.build());
         } else {
             builder.setContentIntent(pIntent)
                     .setSmallIcon(R.drawable.notify_app_ico_for_api21)
@@ -76,10 +77,7 @@ public class MyNotification {
                     .setAutoCancel(true)
                     .setContentTitle("Найдено слово")
                     .setContentText("Найдено описание слова <" + foundWordsList.get(0) + ">.");
-            notification = builder.build();
+            notificationManager.notify(Constants.DESCRIPTION_FOUND_NOTIFY_ID, builder.build());
         }
-        notification.defaults = Notification.DEFAULT_ALL;
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(Constants.DESCRIPTION_FOUND_NOTIFY_ID, notification);
     }
 }

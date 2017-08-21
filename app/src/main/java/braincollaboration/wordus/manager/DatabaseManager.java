@@ -1,5 +1,6 @@
 package braincollaboration.wordus.manager;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
@@ -38,12 +39,12 @@ public class DatabaseManager {
 
     }
 
-    public void getNotFoundWordsList(@NonNull DefaultBackgroundCallback<List<Word>> callback) {
+    public void getNotFoundWordsList(final Context context, @NonNull DefaultBackgroundCallback<List<Word>> callback) {
         BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<List<Word>>() {
 
             @Override
             public List<Word> execute() {
-                return WordusDatabaseHelper.getNotFoundWordDataSet(WordusApp.getCurrentActivity().getApplicationContext());
+                return WordusDatabaseHelper.getNotFoundWordDataSet(context);
             }
         }, callback);
 
@@ -67,14 +68,14 @@ public class DatabaseManager {
         }, callback);
     }
 
-    public void addWordDescriptionInDB(final Word word, DefaultBackgroundCallback<Boolean> callback) {
+    public void addWordDescriptionInDB(final Context context, final Word word, DefaultBackgroundCallback<Boolean> callback) {
         BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
 
             @Override
             public Boolean execute() {
-                SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(context);
                 if (db != null && WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
-                    db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                    db = WordusDatabaseHelper.getWritableDB(context);
                     if (db != null) {
                         WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.getHasLookedFor());
                         return true;

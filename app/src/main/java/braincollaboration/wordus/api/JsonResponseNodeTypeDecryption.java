@@ -18,21 +18,20 @@ public class JsonResponseNodeTypeDecryption {
 
         String mainItemsArrayValue = jp.findJsonValue("Items", null, fieldsIterator);
         ArrayList<String> listOfMainItems = jp.isItJsonArrayList(mainItemsArrayValue);
-        String wordNameLowerCase = wordName.toLowerCase();
 
         for (String jsonMainItem : listOfMainItems) {
             fieldsIterator = jp.jsonRoot(jsonMainItem);
             String dict = jp.findJsonValue("ArticleId", null, fieldsIterator);
 
-            if (dict.equals("\"Dahl (Ru-Ru)__" + wordNameLowerCase + "\"")) {
+            if (dict.equalsIgnoreCase("\"Dahl (Ru-Ru)__" + wordName + "\"")) {
                 fieldsIterator = jp.jsonRoot(jsonMainItem);
                 String dahlDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
                 mapDictionaries.put(Constants.dahlDictionary, dahlDictMeaning);
-            } else if (dict.equals("\"Explanatory (Ru-Ru)__" + wordNameLowerCase + "\"")) {
+            } else if (dict.equalsIgnoreCase("\"Explanatory (Ru-Ru)__" + wordName + "\"")) {
                 fieldsIterator = jp.jsonRoot(jsonMainItem);
                 String explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
                 mapDictionaries.put(Constants.explanatoryDictionary, explanDictMeaning);
-            } else if (dict.equals("\"UrbanDictionary (Ru-Ru)__" + wordNameLowerCase + "\"")) {
+            } else if (dict.equalsIgnoreCase("\"UrbanDictionary (Ru-Ru)__" + wordName + "\"")) {
                 fieldsIterator = jp.jsonRoot(jsonMainItem);
                 String urbanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
                 mapDictionaries.put(Constants.urbanDictionary, urbanDictMeaning);

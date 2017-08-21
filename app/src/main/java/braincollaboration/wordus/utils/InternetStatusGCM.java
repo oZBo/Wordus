@@ -19,6 +19,7 @@ import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
 import braincollaboration.wordus.background.IBackgroundTask;
 import braincollaboration.wordus.database.WordusDatabaseHelper;
+import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
 
@@ -47,13 +48,7 @@ public class InternetStatusGCM extends GcmTaskService {
     }
 
     private void getNotFoundWordList(final Context context) {
-        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<List<Word>>() {
-
-            @Override
-            public List<Word> execute() {
-                return WordusDatabaseHelper.getNotFoundWordDataSet(context);
-            }
-        }, new DefaultBackgroundCallback<List<Word>>() {
+        DatabaseManager.getInstance().getNotFoundWordsList(context, new DefaultBackgroundCallback<List<Word>>() {
 
             @Override
             public void doOnSuccess(List<Word> result) {
@@ -75,7 +70,7 @@ public class InternetStatusGCM extends GcmTaskService {
                 if (result != null) {
                     addWordDescriptionInDB(result, context);
                     if (result.getWordDescription() == null) {
-                        Log.d(Constants.LOG_TAG, word.getWordName() + " " + getString(R.string.description_not_found));
+                        Log.d(Constants.LOG_TAG, word.getWordName() + " description not found");
                     }
                 }
             }
@@ -83,27 +78,13 @@ public class InternetStatusGCM extends GcmTaskService {
     }
 
     private void addWordDescriptionInDB(final Word word, final Context context) {
-        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
-
-            @Override
-            public Boolean execute() {
-                SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(context);
-                if (db != null && WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
-                    db = WordusDatabaseHelper.getWritableDB(context);
-                    if (db != null) {
-                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.getHasLookedFor());
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }, new DefaultBackgroundCallback<Boolean>() {
+        DatabaseManager.getInstance().addWordDescriptionInDB(context, word, new DefaultBackgroundCallback<Boolean>() {
             @Override
             public void doOnSuccess(Boolean result) {
                 if (result) {
                     if (word.getWordDescription() != null) {
                         foundWordsList.add(word.getWordName());
-                        Log.d(Constants.LOG_TAG, word.getWordName() + " " + getString(R.string.description_found));
+                        Log.d(Constants.LOG_TAG, word.getWordName() + " description found");
                     }
                     if (wordsSize == rawWordsCount) {
                         makeNotification();
