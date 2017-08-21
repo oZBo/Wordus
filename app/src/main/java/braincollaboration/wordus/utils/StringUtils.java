@@ -1,6 +1,7 @@
 package braincollaboration.wordus.utils;
 
-public class CheckForLetters {
+public class StringUtils {
+
     public static String checkIsThisALetters(String text) {
         char[] word = text.toCharArray();
         String upperWord = "";
@@ -22,4 +23,5 @@ public class CheckForLetters {
         }
         return upperWord;
     }
+
 }

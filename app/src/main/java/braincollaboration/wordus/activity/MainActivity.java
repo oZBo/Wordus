@@ -26,7 +26,7 @@ import braincollaboration.wordus.background.broadcast.InternetStatusBroadcastRec
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.CheckForLetters;
+import braincollaboration.wordus.utils.StringUtils;
 import braincollaboration.wordus.background.broadcast.IInternetStatusCallback;
 import braincollaboration.wordus.background.broadcast.InternetStatusGCM;
 import braincollaboration.wordus.utils.InternetUtil;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                addWord(CheckForLetters.checkIsThisALetters(s));
+                addWord(StringUtils.checkIsThisALetters(s));
             }
         });
         inputDialog.show();
