@@ -1,4 +1,4 @@
-package braincollaboration.wordus.utils;
+package braincollaboration.wordus.background.broadcast;
 
 public interface IInternetStatusCallback {
 

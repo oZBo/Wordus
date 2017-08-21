@@ -28,7 +28,7 @@
             android:name="io.fabric.ApiKey"
             android:value="d4752e98ae6e1050e1255ef00ef8d026169a5d03" />
 
-        <service android:name=".utils.InternetStatusGCM"
+        <service android:name=".background.broadcast.InternetStatusGCM"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
             android:exported="true">
             <intent-filter>

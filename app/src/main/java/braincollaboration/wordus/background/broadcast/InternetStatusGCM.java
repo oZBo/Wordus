@@ -1,4 +1,4 @@
-package braincollaboration.wordus.utils;
+package braincollaboration.wordus.background.broadcast;
 
 
 import android.content.Context;
@@ -21,6 +21,8 @@ import braincollaboration.wordus.background.IBackgroundTask;
 import braincollaboration.wordus.database.WordusDatabaseHelper;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
+import braincollaboration.wordus.utils.Constants;
+import braincollaboration.wordus.utils.MyNotification;
 
 public class InternetStatusGCM extends GcmTaskService {
     private static IInternetStatusCallback callback;
