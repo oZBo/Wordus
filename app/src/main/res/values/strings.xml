@@ -8,9 +8,6 @@
     <string name="no_connection_now_will_be_found_later">Сейчас нет интеренет соединения. Слово будет найдено позже!</string>
     <string name="database_unavailable">Database unavailable. Try one more time!</string>
     <string name="word_">Слово</string>
-    <string name="_successfully_added_in_db">успешно добавлено</string>
-    <string name="_successfully_deleted_from_db">успешно удалено</string>
-    <string name="word_added">Слово добавлено</string>
     <string name="confirm_title">Подтверждение</string>
     <string name="delete_question">Удалить слово?</string>
     <string name="yes">Да</string>
@@ -19,8 +16,6 @@
     <string name="ok">OK</string>
     <string name="search">Поиск</string>
     <string name="word_to_search">Введите слово</string>
-    <string name="description_found">описание найдено</string>
-    <string name="description_not_found">описание не найдено</string>
     <string name="empty_word_description_not_found">Извините, описание еще не найдено.</string>
     <string name="empty_word_description_not_exist">Извините, нет описания для этого слова.</string>
     <string name="input_dialog_header">Поиск слова</string>

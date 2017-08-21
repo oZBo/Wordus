@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.List;
@@ -88,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initBackgroundSearch() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int resultCode = googleAPI.isGooglePlayServicesAvailable(this);
         if (resultCode == ConnectionResult.SUCCESS) {
             initGCM();
         } else {
@@ -141,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void doOnSuccess(Boolean result) {
                     if (result) {
                         addWordToListView(word);
-                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word.getWordName() + " " + getString(R.string._successfully_added_in_db), Toast.LENGTH_SHORT).show();
                         if (InternetUtil.isInternetTurnOn(MainActivity.this)) {
                             searchWordDescriptionRetrofit(word);
                         } else {
@@ -195,8 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void doOnSuccess(Void result) {
                         mDataSet.remove(word);
-                        adapter.setItemList(mDataSet);
-                        Toast.makeText(WordusApp.getCurrentActivity(), getString(R.string.word_) + " " + word.getWordName() + " " + getString(R.string._successfully_deleted_from_db), Toast.LENGTH_SHORT).show();
+                        adapter.refreshWordList(mDataSet);
                     }
                 });
             }
@@ -210,9 +210,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result);
-                    if (result.getWordDescription() == null) {
-                        Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_not_found), Toast.LENGTH_SHORT).show();
-                    }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.no_connection_now_will_be_found_later), Toast.LENGTH_SHORT).show();
                 }
@@ -221,14 +218,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void addWordDescriptionInDB(final Word word) {
-        DatabaseManager.getInstance().addWordDescriptionInDB(word, new DefaultBackgroundCallback<Boolean>() {
+        DatabaseManager.getInstance().addWordDescriptionInDB(MainActivity.this, word, new DefaultBackgroundCallback<Boolean>() {
             @Override
             public void doOnSuccess(Boolean result) {
                 if (result) {
                     addWordToListView(word);
-                    if (word.getWordDescription() != null) {
-                        Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.description_found), Toast.LENGTH_SHORT).show();
-                    }
                 }
             }
         });
@@ -246,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void internetIsOn() {
         // to search words which have been added without internet
-        DatabaseManager.getInstance().getNotFoundWordsList(new DefaultBackgroundCallback<List<Word>>() {
+        DatabaseManager.getInstance().getNotFoundWordsList(MainActivity.this, new DefaultBackgroundCallback<List<Word>>() {
             @Override
             public void doOnSuccess(List<Word> result) {
                 if (!result.isEmpty()) {

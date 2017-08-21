@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#26A69A</color>
-    <color name="colorPrimaryDark">#009688</color>
-    <color name="colorAccent">#80CBC4</color>
-    <color name="unFoundDescriptionColor">#E57373</color>
-    <color name="almostBlackTextColor">#6B6B6B</color>
-    <color name="separatorColor">#4d80CBC4</color>
+    <color name="colorPrimary">#FF1976D1</color>
+    <color name="colorPrimaryDark">#FF004B9F</color>
+    <color name="colorAccent">#FF63A3FE</color>
+    <color name="unFoundDescriptionColor">#b3e57373</color>
+    <color name="almostBlackTextColor">#333333</color>
+    <color name="separatorColor">#4db9c7f9</color>
     <color name="indexBarColor">#E0E0E0</color>
     <color name="foreground_alpha_50">#88313c5a</color>
 </resources>

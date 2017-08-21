@@ -84,6 +84,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
 
         if (whereArgs != null && db != null) {
             db.delete(TABLE_NAME, COLUMN_NAME + " = ?", whereArgs1);
+            Log.d(Constants.LOG_TAG, whereArgs + " deleted from db");
         }
     }
 
@@ -132,7 +133,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_NAME, s);
         wordNameValue = makeWordValue(wordNameValue, COLUMN_HAS_LOOKED_FOR, !isDefine ? 0 : 1);
         insertWord(db, wordNameValue);
-        Log.d(Constants.LOG_TAG, "word name added in db");
+        Log.d(Constants.LOG_TAG, s + " name added in db");
 
         db.close();
     }
@@ -141,7 +142,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_DESCRIPTION, wordDescription);
         wordNameValue = makeWordValue(wordNameValue, COLUMN_HAS_LOOKED_FOR, !isDefine ? 0 : 1);
         updateWord(db, wordNameValue, COLUMN_NAME, wordName);
-        Log.d(Constants.LOG_TAG, "word description added in db");
+        Log.d(Constants.LOG_TAG, wordName + " description added in db");
 
         db.close();
     }

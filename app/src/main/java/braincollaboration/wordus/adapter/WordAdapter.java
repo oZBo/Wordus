@@ -35,6 +35,8 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     public void refreshWordList(List<Word> words) {
         wordsList = words;
         super.setItemList(words);
+
+        notifyDataSetChanged();
     }
 
     @Override
