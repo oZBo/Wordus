@@ -2,7 +2,6 @@ package braincollaboration.wordus.utils;
 
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -14,11 +13,7 @@ import com.google.android.gms.gcm.TaskParams;
 import java.util.ArrayList;
 import java.util.List;
 
-import braincollaboration.wordus.R;
-import braincollaboration.wordus.background.BackgroundManager;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
-import braincollaboration.wordus.background.IBackgroundTask;
-import braincollaboration.wordus.database.WordusDatabaseHelper;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
@@ -95,13 +90,11 @@ public class InternetStatusGCM extends GcmTaskService {
     }
 
     private void makeNotification() {
-        MyNotification.sendInboxStyleNotification(this, foundWordsList, wordsSize);
+        MyNotification.sendNotification(this, foundWordsList, wordsSize);
     }
 
     public static void scheduleSync(Context context, IInternetStatusCallback callback) {
-        if (callback != null) {
-            InternetStatusGCM.callback = callback;
-        }
+        InternetStatusGCM.callback = callback;
         GcmNetworkManager mGcmNetworkManager = GcmNetworkManager.getInstance(context);
         Task task = new OneoffTask.Builder()
                 .setService(InternetStatusGCM.class)
