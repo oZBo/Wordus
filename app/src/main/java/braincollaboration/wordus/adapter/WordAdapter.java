@@ -4,12 +4,11 @@ package braincollaboration.wordus.adapter;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,7 +17,6 @@ import java.util.List;
 
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.Constants;
 
 public class WordAdapter extends SectionedAdapterBase<Word> {
 
@@ -73,13 +71,13 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     private class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView wordName;
-        private Button deleteButton;
+        private ImageButton deleteButton;
         private RelativeLayout rootView;
 
         ViewHolder(View itemView) {
             super(itemView);
             wordName = (TextView) itemView.findViewById(R.id.recycler_item_headline_text);
-            deleteButton = (Button) itemView.findViewById(R.id.recyclerViewItemDeleteButton);
+            deleteButton = (ImageButton) itemView.findViewById(R.id.recyclerViewItemDeleteButton);
             rootView = (RelativeLayout) itemView.findViewById(R.id.recycler_item_relativeLayout);
         }
     }
