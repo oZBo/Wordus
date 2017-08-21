@@ -1,15 +1,11 @@
 package braincollaboration.wordus.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,19 +17,18 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.List;
 
-import braincollaboration.wordus.utils.Constants;
-import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
-import braincollaboration.wordus.utils.InternetStatusGCM;
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
+import braincollaboration.wordus.background.broadcast.InternetStatusBroadcastReceiver;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
 import braincollaboration.wordus.utils.CheckForLetters;
-import braincollaboration.wordus.utils.IInternetStatusCallback;
+import braincollaboration.wordus.background.broadcast.IInternetStatusCallback;
+import braincollaboration.wordus.background.broadcast.InternetStatusGCM;
 import braincollaboration.wordus.utils.InternetUtil;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;

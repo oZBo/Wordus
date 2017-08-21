@@ -1,9 +1,12 @@
-package braincollaboration.wordus.utils;
+package braincollaboration.wordus.background.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import braincollaboration.wordus.utils.Constants;
+import braincollaboration.wordus.utils.InternetUtil;
 
 public class InternetStatusBroadcastReceiver extends BroadcastReceiver {
     IInternetStatusCallback callback;
