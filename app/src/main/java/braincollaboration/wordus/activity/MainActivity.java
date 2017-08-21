@@ -14,23 +14,23 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
+import braincollaboration.wordus.utils.InternetStatusGCM;
 import braincollaboration.wordus.R;
-import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
-import braincollaboration.wordus.background.broadcast.InternetStatusBroadcastReceiver;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.StringUtils;
-import braincollaboration.wordus.background.broadcast.IInternetStatusCallback;
-import braincollaboration.wordus.background.broadcast.InternetStatusGCM;
+import braincollaboration.wordus.utils.CheckForLetters;
+import braincollaboration.wordus.utils.IInternetStatusCallback;
 import braincollaboration.wordus.utils.InternetUtil;
+import braincollaboration.wordus.utils.MyNotification;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
 import braincollaboration.wordus.view.dialog.ConfirmationDialog;
@@ -49,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView wordDescriptionTextView;
     private TextView wordNameTextView;
     private InternetStatusBroadcastReceiver mBroadcastReceiver;
+
+    private static int wordsSizeForNotification;
+    private static int wordsCountForNotification;
+    private static ArrayList<String> wordsListForNotification = new ArrayList<>();
+    private static boolean isOnPause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                addWord(StringUtils.checkIsThisALetters(s));
+                addWord(CheckForLetters.checkIsThisALetters(s));
             }
         });
         inputDialog.show();
@@ -205,16 +210,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void searchWordDescriptionRetrofit(final Word word) {
+        if (isOnPause) {
+            wordsCountForNotification++;
+        }
         RetrofitManager.getInstance().searchWordDescription(word, new DefaultBackgroundCallback<Word>() {
             @Override
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result);
+
+                    if (isOnPause) {
+                        wordsListForNotification.add(result.getWordName());
+                        if (wordsCountForNotification == wordsSizeForNotification) {
+                            notifyCauseOnPause();
+                        }
+                    }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.no_connection_now_will_be_found_later), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    private void notifyCauseOnPause() {
+        MyNotification.sendNotification(MainActivity.this, wordsListForNotification, wordsSizeForNotification);
+        wordsCountForNotification = 0;
+        wordsSizeForNotification = 0;
+        wordsListForNotification = new ArrayList<>();
+
     }
 
     private void addWordDescriptionInDB(final Word word) {
@@ -244,6 +267,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void doOnSuccess(List<Word> result) {
                 if (!result.isEmpty()) {
+                    if (isOnPause) {
+                        wordsSizeForNotification = result.size();
+                    }
                     for (Word word : result) {
                         searchWordDescriptionRetrofit(word);
                     }
@@ -251,6 +277,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        isOnPause = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        isOnPause = false;
     }
 
     private void cancelGCMTask() {

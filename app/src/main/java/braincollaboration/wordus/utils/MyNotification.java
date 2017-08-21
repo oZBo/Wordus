@@ -17,7 +17,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class MyNotification {
 
-    public static void sendInboxStyleNotification(Context context, ArrayList<String> foundWordsList, int wordsSize) {
+    public static void sendNotification(Context context, ArrayList<String> foundWordsList, int wordsSize) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         Resources res = context.getResources();
