@@ -29,13 +29,20 @@ public class MyNotification {
         NotificationCompat.InboxStyle notificationInbox;
 
         int size = foundWordsList.size();
+        //making inbox notification for more than one found word
         if (size > 1) {
+
+            //to define intent
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.putExtra(Constants.TAG_TASK_ONEOFF_LOG, Constants.TAG_TASK_ONEOFF_LOG);
+            pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
             builder.setAutoCancel(true)
                     .setTicker("Слова найдены!")
                     .setSmallIcon(R.drawable.notify_app_ico_for_api21)
-                    .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico))
-                    .addAction(R.drawable.ic_play_white_36dp, "Посмотреть", PendingIntent.getActivity(context, 0, intent, 0))
+                    // 60x60 size is shown without crop
+                    .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico_60x60))
+                    .addAction(R.drawable.ic_play_white_36dp, "Посмотреть", pIntent)
                     .setDefaults(NotificationCompat.DEFAULT_ALL);
             if (size < 5) {
                 builder.setContentTitle(foundWordsList.size() + " слова найдено")
@@ -45,39 +52,33 @@ public class MyNotification {
                         .setContentText("Найдено " + foundWordsList.size() + " описаний из " + wordsSize + " слов");
             }
 
+            //defines the amount of additional word's lines
             notificationInbox = new NotificationCompat.InboxStyle();
-            if (size > 1) {
+            for (int i = 0; i < size; i++) {
                 notificationInbox
-                        .addLine(foundWordsList.get(0))
-                        .addLine(foundWordsList.get(1));
-            }
-
-            if (size > 2) {
-                notificationInbox
-                        .addLine(foundWordsList.get(2));
-            }
-
-            if (size > 3) {
-                notificationInbox
-                        .addLine(foundWordsList.get(3));
-            }
-
-            if (size > 4) {
-                notificationInbox
-                        .setSummaryText("+" + (size - 4) + " еще");
-
+                        .addLine(foundWordsList.get(i));
+                if (size > 4 && i == 3) {
+                    notificationInbox
+                            .setSummaryText("+" + (size - 4) + " еще");
+                    i = size;
+                }
             }
             builder.setStyle(notificationInbox);
             builder.build().flags |= Notification.FLAG_AUTO_CANCEL;
             notificationManager.notify(Constants.DESCRIPTIONS_FOUND_NOTIFY_ID, builder.build());
-        } else {
+
+        }
+        //making usual notification for one found word only
+        else {
             builder.setContentIntent(pIntent)
                     .setSmallIcon(R.drawable.notify_app_ico_for_api21)
-                    .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico))
+                    // 60x60 size is shown without crop
+                    .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico_60x60))
                     .setTicker("Найдено слово!")
                     .setAutoCancel(true)
                     .setContentTitle("Найдено слово")
-                    .setContentText("Найдено описание слова <" + foundWordsList.get(0) + ">.");
+                    .setContentText("Найдено описание слова <" + foundWordsList.get(0) + ">.")
+                    .setDefaults(NotificationCompat.DEFAULT_ALL);
 
             notificationManager.notify(Constants.DESCRIPTION_FOUND_NOTIFY_ID, builder.build());
         }

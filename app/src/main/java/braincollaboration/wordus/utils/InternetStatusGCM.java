@@ -20,7 +20,7 @@ import braincollaboration.wordus.model.Word;
 
 public class InternetStatusGCM extends GcmTaskService {
     private static IInternetStatusCallback callback;
-    private static int wordsSize;
+    private static int hasntFoundWordsListSize;
     private static int wordsCount;
     private static ArrayList<String> foundWordsList = new ArrayList<>();
 
@@ -46,12 +46,11 @@ public class InternetStatusGCM extends GcmTaskService {
         DatabaseManager.getInstance().getNotFoundWordsList(context, new DefaultBackgroundCallback<List<Word>>() {
 
             @Override
-            public void doOnSuccess(List<Word> result) {
-                if (!result.isEmpty()) {
-                    wordsSize = result.size();
+            public void doOnSuccess(List<Word> hasntFoundWordsList) {
+                if (!hasntFoundWordsList.isEmpty()) {
+                    hasntFoundWordsListSize = hasntFoundWordsList.size();
                     wordsCount = 0;
-                    Log.d(Constants.LOG_TAG, "not searched words description list size: " + wordsSize);
-                    for (Word word : result) {
+                    for (Word word : hasntFoundWordsList) {
                         searchWordDescriptionRetrofit(word, context);
                     }
                 }
@@ -79,7 +78,7 @@ public class InternetStatusGCM extends GcmTaskService {
                 }
 
                 wordsCount++;
-                if (wordsSize == wordsCount) {
+                if (hasntFoundWordsListSize == wordsCount) {
                     makeNotification();
                 }
 
@@ -89,7 +88,7 @@ public class InternetStatusGCM extends GcmTaskService {
     }
 
     private void makeNotification() {
-        MyNotification.sendNotification(this, foundWordsList, wordsSize);
+        MyNotification.sendNotification(this, foundWordsList, hasntFoundWordsListSize);
     }
 
     public static void scheduleSync(Context context, IInternetStatusCallback callback) {

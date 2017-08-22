@@ -47,13 +47,13 @@
                     android:layout_height="match_parent"
                     android:autoLink="web"
                     android:gravity="start"
-                    android:lineSpacingMultiplier="1.2"
+                    android:lineSpacingMultiplier="1.1"
                     android:linksClickable="true"
                     android:padding="@dimen/base_margin"
                     android:text="@string/bottom_sheet_content"
                     android:textColor="@color/almostBlackTextColor"
                     android:textIsSelectable="true"
-                    android:textSize="@dimen/default_text_size" />
+                    android:textSize="@dimen/default_textView_size" />
 
             </LinearLayout>
 

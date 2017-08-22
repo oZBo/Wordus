@@ -16,7 +16,7 @@
         android:layout_marginRight="@dimen/base_margin"
         android:text="@string/word_"
         android:textColor="@color/almostBlackTextColor"
-        android:textSize="@dimen/default_text_size" />
+        android:textSize="@dimen/default_textRecyclerView_size" />
 
     <Button
         android:id="@+id/recyclerViewItemDeleteButton"

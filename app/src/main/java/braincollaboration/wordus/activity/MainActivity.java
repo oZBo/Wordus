@@ -3,12 +3,12 @@ package braincollaboration.wordus.activity;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,17 +54,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView wordNameTextView;
     private InternetStatusBroadcastReceiver mBroadcastReceiver;
 
-    private static int wordsSizeForNotification;
+    // case when app is onPause to show Notification
+    private static int hasntFoundWordsListSizeForNotification;
     private static int wordsCountForNotification;
-    private static ArrayList<String> wordsListForNotification = new ArrayList<>();
+    private static ArrayList<String> foundWordsListForNotification = new ArrayList<>();
     private static boolean isOnPause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // to close plural notification by defined intent
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            closePluralNotification(extras);
+        }
+
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         loadDataFromDB();
+    }
+
+    private void closePluralNotification(Bundle extras) {
+        String tag = extras.getString(Constants.TAG_TASK_ONEOFF_LOG);
+        if (tag != null && tag.equals(Constants.TAG_TASK_ONEOFF_LOG)) {
+            NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+            manager.cancel(Constants.DESCRIPTIONS_FOUND_NOTIFY_ID);
+        }
     }
 
     private void loadDataFromDB() {
@@ -85,7 +101,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initWidgets() {
         wordDescriptionTextView = (TextView) findViewById(R.id.bottom_sheet_content_text);
+        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/PT_Sans-Web-Regular.ttf");
+        wordDescriptionTextView.setTypeface(face);
+
         wordNameTextView = (TextView) findViewById(R.id.bottom_sheet_title_text);
+        face = Typeface.createFromAsset(getAssets(), "fonts/PT_Sans-Web-Bold.ttf");
+        wordNameTextView.setTypeface(face);
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
         recyclerView = (RecyclerViewWithFAB) findViewById(R.id.recycler_view);
@@ -119,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
-        adapter = new WordAdapter(this, R.layout.header_separator, dataSet, this);
+        adapter = new WordAdapter(R.layout.header_separator, dataSet, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -219,16 +241,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result);
+                    // case when app is onPause
                     if (isOnPause && result.getWordDescription() != null) {
-                        wordsListForNotification.add(result.getWordName());
+                        foundWordsListForNotification.add(result.getWordName());
                     }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.no_connection_now_will_be_found_later), Toast.LENGTH_SHORT).show();
                 }
 
+                // case when app is onPause
                 if (isOnPause) {
                     wordsCountForNotification++;
-                    if (wordsCountForNotification == wordsSizeForNotification) {
+                    // and searched word was the last in hasn'tLookedForList
+                    if (wordsCountForNotification == hasntFoundWordsListSizeForNotification) {
                         notifyCauseOnPause();
                     }
                 }
@@ -237,10 +262,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void notifyCauseOnPause() {
-        MyNotification.sendNotification(MainActivity.this, wordsListForNotification, wordsSizeForNotification);
+        MyNotification.sendNotification(MainActivity.this, foundWordsListForNotification, hasntFoundWordsListSizeForNotification);
         wordsCountForNotification = 0;
-        wordsSizeForNotification = 0;
-        wordsListForNotification = new ArrayList<>();
+        hasntFoundWordsListSizeForNotification = 0;
+        foundWordsListForNotification = new ArrayList<>();
 
     }
 
@@ -269,12 +294,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // to search words which have been added without internet
         DatabaseManager.getInstance().getNotFoundWordsList(MainActivity.this, new DefaultBackgroundCallback<List<Word>>() {
             @Override
-            public void doOnSuccess(List<Word> result) {
-                if (!result.isEmpty()) {
+            public void doOnSuccess(List<Word> hasntFoundWordsList) {
+                if (!hasntFoundWordsList.isEmpty()) {
+                    // case when app is onPause to show notification
                     if (isOnPause) {
-                        wordsSizeForNotification = result.size();
+                        hasntFoundWordsListSizeForNotification = hasntFoundWordsList.size();
                     }
-                    for (Word word : result) {
+                    for (Word word : hasntFoundWordsList) {
                         searchWordDescriptionRetrofit(word);
                     }
                 }
