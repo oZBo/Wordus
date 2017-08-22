@@ -43,7 +43,7 @@ public class JsonResponseNodeTypeDecryption {
                 String dictName = dictionary.getKey();
 
                 jp.findDescription(dictionary.getValue());
-                dictName += JsonParse.dictionary + "\n\n";
+                dictName += JsonParse.dictionary + "<br><br>";
                 wordMeaning += dictName;
 
                 JsonParse.dictionary = "";
