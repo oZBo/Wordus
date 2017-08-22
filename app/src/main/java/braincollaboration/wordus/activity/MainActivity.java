@@ -18,19 +18,19 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.List;
 
-import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
-import braincollaboration.wordus.utils.InternetStatusGCM;
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
+import braincollaboration.wordus.background.broadcast.IInternetStatusCallback;
+import braincollaboration.wordus.background.broadcast.InternetStatusBroadcastReceiver;
+import braincollaboration.wordus.background.broadcast.InternetStatusGCM;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.CheckForLetters;
-import braincollaboration.wordus.utils.IInternetStatusCallback;
 import braincollaboration.wordus.utils.InternetUtil;
 import braincollaboration.wordus.utils.MyNotification;
+import braincollaboration.wordus.utils.StringUtils;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
 import braincollaboration.wordus.view.bottomsheet.BottomScreenBehavior;
 import braincollaboration.wordus.view.dialog.ConfirmationDialog;
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                addWord(CheckForLetters.checkIsThisALetters(s));
+                addWord(StringUtils.checkIsThisALetters(s));
             }
         });
         inputDialog.show();
