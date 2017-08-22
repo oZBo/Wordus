@@ -24,11 +24,13 @@ import braincollaboration.wordus.R;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
+import braincollaboration.wordus.background.broadcast.InternetStatusBroadcastReceiver;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.CheckForLetters;
-import braincollaboration.wordus.utils.IInternetStatusCallback;
+import braincollaboration.wordus.utils.StringUtils;
+import braincollaboration.wordus.background.broadcast.IInternetStatusCallback;
+import braincollaboration.wordus.background.broadcast.InternetStatusGCM;
 import braincollaboration.wordus.utils.InternetUtil;
 import braincollaboration.wordus.utils.MyNotification;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
@@ -49,11 +51,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView wordDescriptionTextView;
     private TextView wordNameTextView;
     private InternetStatusBroadcastReceiver mBroadcastReceiver;
-
-    private static int wordsSizeForNotification;
-    private static int wordsCountForNotification;
-    private static ArrayList<String> wordsListForNotification = new ArrayList<>();
-    private static boolean isOnPause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                addWord(CheckForLetters.checkIsThisALetters(s));
+                addWord(StringUtils.checkIsThisALetters(s));
             }
         });
         inputDialog.show();
