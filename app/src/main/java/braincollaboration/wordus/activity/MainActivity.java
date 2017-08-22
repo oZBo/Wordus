@@ -1,11 +1,14 @@
 package braincollaboration.wordus.activity;
 
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +21,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.List;
 
+import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
 import braincollaboration.wordus.utils.InternetStatusGCM;
 import braincollaboration.wordus.R;
@@ -210,23 +214,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void searchWordDescriptionRetrofit(final Word word) {
-        if (isOnPause) {
-            wordsCountForNotification++;
-        }
         RetrofitManager.getInstance().searchWordDescription(word, new DefaultBackgroundCallback<Word>() {
             @Override
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result);
-
-                    if (isOnPause) {
+                    if (isOnPause && result.getWordDescription() != null) {
                         wordsListForNotification.add(result.getWordName());
-                        if (wordsCountForNotification == wordsSizeForNotification) {
-                            notifyCauseOnPause();
-                        }
                     }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.no_connection_now_will_be_found_later), Toast.LENGTH_SHORT).show();
+                }
+
+                if (isOnPause) {
+                    wordsCountForNotification++;
+                    if (wordsCountForNotification == wordsSizeForNotification) {
+                        notifyCauseOnPause();
+                    }
                 }
             }
         });

@@ -21,7 +21,7 @@ import braincollaboration.wordus.model.Word;
 public class InternetStatusGCM extends GcmTaskService {
     private static IInternetStatusCallback callback;
     private static int wordsSize;
-    private static int rawWordsCount = 0;
+    private static int wordsCount;
     private static ArrayList<String> foundWordsList = new ArrayList<>();
 
     @Override
@@ -49,8 +49,9 @@ public class InternetStatusGCM extends GcmTaskService {
             public void doOnSuccess(List<Word> result) {
                 if (!result.isEmpty()) {
                     wordsSize = result.size();
+                    wordsCount = 0;
+                    Log.d(Constants.LOG_TAG, "not searched words description list size: " + wordsSize);
                     for (Word word : result) {
-                        rawWordsCount++;
                         searchWordDescriptionRetrofit(word, context);
                     }
                 }
@@ -64,9 +65,6 @@ public class InternetStatusGCM extends GcmTaskService {
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result, context);
-                    if (result.getWordDescription() == null) {
-                        Log.d(Constants.LOG_TAG, word.getWordName() + " description not found");
-                    }
                 }
             }
         });
@@ -76,17 +74,18 @@ public class InternetStatusGCM extends GcmTaskService {
         DatabaseManager.getInstance().addWordDescriptionInDB(context, word, new DefaultBackgroundCallback<Boolean>() {
             @Override
             public void doOnSuccess(Boolean result) {
-                if (result) {
-                    if (word.getWordDescription() != null) {
-                        foundWordsList.add(word.getWordName());
-                        Log.d(Constants.LOG_TAG, word.getWordName() + " description found");
-                    }
-                    if (wordsSize == rawWordsCount) {
-                        makeNotification();
-                    }
+                if (result && word.getWordDescription() != null) {
+                    foundWordsList.add(word.getWordName());
                 }
+
+                wordsCount++;
+                if (wordsSize == wordsCount) {
+                    makeNotification();
+                }
+
             }
         });
+
     }
 
     private void makeNotification() {

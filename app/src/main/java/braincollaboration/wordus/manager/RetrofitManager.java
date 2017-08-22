@@ -42,10 +42,10 @@ public class RetrofitManager {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull final Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
+                    Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description found");
                     BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
                         @Override
                         public Word execute() {
-                            Word outWord = null;
                             String wordMeaning = null;
 
                             try {
@@ -56,18 +56,16 @@ public class RetrofitManager {
 
                             wordMeaning = new JsonResponseNodeTypeDecryption().parse(wordMeaning, innerWord.getWordName());
                             if (wordMeaning != null) {
-                                Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description found");
-                                outWord = innerWord;
-                                outWord.setWordDescription(wordMeaning);
-                                outWord.setHasLookedFor(true);
+                                Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description PARSED");
+                                innerWord.setWordDescription(wordMeaning);
                             }
+                            innerWord.setHasLookedFor(true);
 
-                            return outWord;
+                            return innerWord;
                         }
                     }, callback);
                 } else {
-                    Log.e(Constants.LOG_TAG, "search response isn't successful, code: " + response.code());
-                    Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description not found");
+                    Log.e(Constants.LOG_TAG, "Code: " + response.code() + ". Search response isn't successful, there is no description for " + innerWord.getWordName());
                     BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
 
                         @Override

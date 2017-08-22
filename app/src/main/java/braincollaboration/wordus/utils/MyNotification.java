@@ -1,5 +1,6 @@
 package braincollaboration.wordus.utils;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -26,14 +28,14 @@ public class MyNotification {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         NotificationCompat.InboxStyle notificationInbox;
 
-
         int size = foundWordsList.size();
         if (size > 1) {
+            intent.putExtra(Constants.TAG_TASK_ONEOFF_LOG, Constants.TAG_TASK_ONEOFF_LOG);
             builder.setAutoCancel(true)
                     .setTicker("Слова найдены!")
                     .setSmallIcon(R.drawable.notify_app_ico_for_api21)
                     .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_ico))
-                    .addAction(R.drawable.ic_play_white_36dp, "Посмотреть", pIntent)
+                    .addAction(R.drawable.ic_play_white_36dp, "Посмотреть", PendingIntent.getActivity(context, 0, intent, 0))
                     .setDefaults(NotificationCompat.DEFAULT_ALL);
             if (size < 5) {
                 builder.setContentTitle(foundWordsList.size() + " слова найдено")
@@ -43,7 +45,7 @@ public class MyNotification {
                         .setContentText("Найдено " + foundWordsList.size() + " описаний из " + wordsSize + " слов");
             }
 
-            notificationInbox = new NotificationCompat.InboxStyle(builder);
+            notificationInbox = new NotificationCompat.InboxStyle();
             if (size > 1) {
                 notificationInbox
                         .addLine(foundWordsList.get(0))
@@ -65,10 +67,9 @@ public class MyNotification {
                         .setSummaryText("+" + (size - 4) + " еще");
 
             }
-            //notificationInbox.defaults = NotificationCompat.DEFAULT_ALL;
-            //notificationInbox.build();
-            //notificationInbox.flags |= NotificationCompat.FLAG_AUTO_CANCEL;
-            notificationManager.notify(Constants.DESCRIPTION_FOUND_NOTIFY_ID, notificationInbox.build());
+            builder.setStyle(notificationInbox);
+            builder.build().flags |= Notification.FLAG_AUTO_CANCEL;
+            notificationManager.notify(Constants.DESCRIPTIONS_FOUND_NOTIFY_ID, builder.build());
         } else {
             builder.setContentIntent(pIntent)
                     .setSmallIcon(R.drawable.notify_app_ico_for_api21)
@@ -77,6 +78,7 @@ public class MyNotification {
                     .setAutoCancel(true)
                     .setContentTitle("Найдено слово")
                     .setContentText("Найдено описание слова <" + foundWordsList.get(0) + ">.");
+
             notificationManager.notify(Constants.DESCRIPTION_FOUND_NOTIFY_ID, builder.build());
         }
     }
