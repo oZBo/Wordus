@@ -35,7 +35,6 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     public void refreshWordList(List<Word> words) {
         wordsList = words;
         super.setItemList(words);
-
         notifyDataSetChanged();
     }
 
@@ -43,11 +42,6 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     public void onBindItemViewHolder(final RecyclerView.ViewHolder holder, final Word item, @ViewType int viewType) {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.wordName.setText(item.getWordName());
-
-        //not work correct
-//        if (item.getWordDescription() == null) {
-//            viewHolder.rootView.setBackgroundColor(ContextCompat.getColor(context, R.color.unFoundDescriptionColor));
-//        }
 
         viewHolder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override

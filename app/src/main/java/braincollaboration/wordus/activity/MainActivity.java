@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -186,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 wordDescriptionTextView.setText(getString(R.string.empty_word_description_not_exist));
             }
         } else {
-            wordDescriptionTextView.setText(word.getWordDescription());
+            wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription()));
         }
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
