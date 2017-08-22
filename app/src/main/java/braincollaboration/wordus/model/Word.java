@@ -3,11 +3,12 @@ package braincollaboration.wordus.model;
 
 import braincollaboration.wordus.adapter.Categorizable;
 
-public class Word implements Categorizable{
+public class Word implements Categorizable {
 
     private String name;
     private String description;
     private int id;
+    private boolean hasLookedFor;
 
     public String getWordName() {
         return name;
@@ -31,6 +32,14 @@ public class Word implements Categorizable{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean getHasLookedFor() {
+        return hasLookedFor;
+    }
+
+    public void setHasLookedFor(boolean hasLookedFor) {
+        this.hasLookedFor = hasLookedFor;
     }
 
     @Override

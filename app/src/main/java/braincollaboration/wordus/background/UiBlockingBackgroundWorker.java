@@ -8,6 +8,7 @@ import braincollaboration.wordus.view.loader.LoaderManager;
  */
 
 public class UiBlockingBackgroundWorker<T> extends BackgroundWorker<T> {
+
     public UiBlockingBackgroundWorker(IBackgroundTask<T> task, IBackgroundCallback<T> callback) {
         super(task, callback);
     }
@@ -22,4 +23,5 @@ public class UiBlockingBackgroundWorker<T> extends BackgroundWorker<T> {
         LoaderManager.hide();
         super.onPostExecute(result);
     }
+
 }

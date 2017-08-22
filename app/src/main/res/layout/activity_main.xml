@@ -1,62 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="braincollaboration.wordus.MainActivity">
+    android:background="@drawable/list_background">
 
-    <in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView
+    <braincollaboration.wordus.view.RecyclerViewWithFAB
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/recycler_view_bottom_margin"
+        app:fabId="@+id/fab" />
 
-    <!-- подключение нижнего экрана -->
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="match_parent"
         android:background="@android:color/white"
         android:orientation="vertical"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="80dp"
+        app:behavior_peekHeight="@dimen/recycler_view_bottom_margin"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
         <TextView
-            android:id="@+id/bottom_sheet_top_text"
+            android:id="@+id/bottom_sheet_title_text"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="55dp"
             android:background="@color/colorAccent"
             android:gravity="center"
             android:text="@string/bottom_sheet_peek"
-            android:textColor="@android:color/white"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            />
+            android:textColor="@color/almostBlackTextColor"
+            android:textSize="@dimen/default_title_text_size" />
 
-            <ScrollView
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/word_description_background"
+            android:scrollbars="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/bottom_sheet_bottom_text"
+                    android:id="@+id/bottom_sheet_content_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center"
+                    android:autoLink="web"
+                    android:gravity="start"
                     android:lineSpacingMultiplier="1.2"
+                    android:linksClickable="true"
+                    android:padding="@dimen/base_margin"
                     android:text="@string/bottom_sheet_content"
                     android:textColor="@color/almostBlackTextColor"
                     android:textIsSelectable="true"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/default_text_size" />
 
-                </LinearLayout>
-            </ScrollView>
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
 
     </LinearLayout>
 
@@ -68,7 +71,7 @@
         android:src="@drawable/ic_search_white_24dp"
         android:theme="@style/Widget.Design.FloatingActionButton"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_anchor="@+id/bottom_sheet"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchor="@+id/recycler_view"
+        app:layout_anchorGravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>
