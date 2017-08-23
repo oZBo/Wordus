@@ -17,7 +17,6 @@
         android:textAllCaps="true"
         android:textColor="@color/almostBlackTextColor"
         android:textSize="@dimen/default_title_text_size"
-        android:textStyle="bold"
         tools:text="Header" />
 
 </LinearLayout>
