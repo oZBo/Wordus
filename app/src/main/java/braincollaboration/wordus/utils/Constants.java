@@ -11,8 +11,6 @@ public class Constants {
     public static final String dahlDictionary = "<b>В. Даль Толковый словарь живого великорусского языка:</b><br>";
     public static final String explanatoryDictionary = "<b>Д.Н. Ушаков Большой современный толковый словарь русского языка:</b><br>";
     public static final int DESCRIPTIONS_FOUND_NOTIFY_ID = 1234567892;
-    public static final String dahlDictionary = "В. Даль Толковый словарь живого великорусского языка:";
-    public static final String explanatoryDictionary = "Д.Н. Ушаков Большой современный толковый словарь русского языка:";
     public static final String urbanDictionary = "Языки городов. Материалы к словарю русской региональной лексики. Под ред. В. И. Беликова:";
     public static final String EMAIL_LINK = "ennakent@gmail.com";
     public static final String SKYPE_LINK = "berdnikov111";

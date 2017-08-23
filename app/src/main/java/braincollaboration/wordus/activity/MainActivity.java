@@ -1,5 +1,7 @@
 package braincollaboration.wordus.activity;
 
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -20,9 +22,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.List;
 
-import braincollaboration.wordus.utils.Constants;
-import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
-import braincollaboration.wordus.utils.InternetStatusGCM;
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
@@ -33,8 +32,7 @@ import braincollaboration.wordus.background.broadcast.InternetStatusGCM;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.CheckForLetters;
-import braincollaboration.wordus.utils.IInternetStatusCallback;
+import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.utils.InternetUtil;
 import braincollaboration.wordus.utils.MyNotification;
 import braincollaboration.wordus.utils.StringUtils;
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
-        adapter = new WordAdapter(R.layout.header_separator, dataSet, this);
+        adapter = new WordAdapter(R.layout.header_separator, dataSet, this, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -162,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                addWord(CheckForLetters.checkIsThisALetters(s));
+                addWord(StringUtils.checkIsThisALetters(s));
             }
         });
         inputDialog.show();
@@ -215,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 wordDescriptionTextView.setText(getString(R.string.empty_word_description_not_exist));
             }
         } else {
-            wordDescriptionTextView.setText(word.getWordDescription());
+            wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription()));
         }
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);

@@ -24,10 +24,10 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        android:gravity="center|center_horizontal"
         android:padding="10dp"
         android:scaleType="centerInside"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_delete_variant"
-        android:gravity="center|center_horizontal" />
+        android:src="@drawable/ic_delete_variant" />
 
 </RelativeLayout>
