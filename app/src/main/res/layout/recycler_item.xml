@@ -5,18 +5,23 @@
     android:layout_height="48dp"
     android:orientation="horizontal">
 
+    <View
+        android:id="@+id/word_state_label"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true" />
+
     <TextView
         android:id="@+id/recycler_item_headline_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/base_margin"
         android:layout_marginRight="@dimen/base_margin"
+        android:layout_toRightOf="@+id/word_state_label"
         android:text="@string/word_"
         android:textColor="@color/almostBlackTextColor"
-        android:textSize="@dimen/default_text_size" />
+        android:textSize="@dimen/default_textRecyclerView_size" />
 
     <ImageButton
         android:id="@+id/recyclerViewItemDeleteButton"
@@ -24,10 +29,10 @@
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        android:gravity="center|center_horizontal"
         android:padding="10dp"
         android:scaleType="centerInside"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_delete_variant"
-        android:gravity="center|center_horizontal" />
+        android:src="@drawable/ic_delete_variant" />
 
 </RelativeLayout>

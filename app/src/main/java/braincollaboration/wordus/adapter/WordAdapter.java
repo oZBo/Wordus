@@ -2,6 +2,7 @@ package braincollaboration.wordus.adapter;
 
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,37 +13,32 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import braincollaboration.wordus.R;
+import braincollaboration.wordus.WordusApp;
 import braincollaboration.wordus.model.Word;
 
 public class WordAdapter extends SectionedAdapterBase<Word> {
 
-    private Context context;
     private IWordAdapterCallback actionsCallback;
-    private List<Word> wordsList = new ArrayList<>();
 
-    public WordAdapter(Context context, @LayoutRes int layoutResId, List<Word> wordList, @NonNull IWordAdapterCallback callback) {
+    public WordAdapter(@LayoutRes int layoutResId, List<Word> wordList, @NonNull IWordAdapterCallback callback, Context context) {
         super.setItemList(wordList);
-        this.context = context;
         this.actionsCallback = callback;
-        this.wordsList = wordList;
         setCustomHeaderLayout(layoutResId);
     }
 
     public void refreshWordList(List<Word> words) {
-        wordsList = words;
         super.setItemList(words);
-        notifyDataSetChanged();
     }
 
     @Override
     public void onBindItemViewHolder(final RecyclerView.ViewHolder holder, final Word item, @ViewType int viewType) {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.wordName.setText(item.getWordName());
-
+        int wordStateColor = item.getWordDescription() == null ? WordusApp.getCurrentActivity().getResources().getColor(R.color.noDescriptionColor) : WordusApp.getCurrentActivity().getResources().getColor(android.R.color.transparent);
+        viewHolder.wordStateLabel.setBackgroundColor(wordStateColor);
         viewHolder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,10 +65,15 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
         private TextView wordName;
         private ImageButton deleteButton;
         private RelativeLayout rootView;
+        private View wordStateLabel;
 
         ViewHolder(View itemView) {
             super(itemView);
+
             wordName = (TextView) itemView.findViewById(R.id.recycler_item_headline_text);
+            Typeface face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), "fonts/PT_Sans-Web-Regular.ttf");
+            wordName.setTypeface(face);
+            wordStateLabel = itemView.findViewById(R.id.word_state_label);
             deleteButton = (ImageButton) itemView.findViewById(R.id.recyclerViewItemDeleteButton);
             rootView = (RelativeLayout) itemView.findViewById(R.id.recycler_item_relativeLayout);
         }

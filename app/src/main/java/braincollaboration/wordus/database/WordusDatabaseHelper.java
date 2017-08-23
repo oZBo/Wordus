@@ -142,7 +142,12 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_DESCRIPTION, wordDescription);
         wordNameValue = makeWordValue(wordNameValue, COLUMN_HAS_LOOKED_FOR, !isDefine ? 0 : 1);
         updateWord(db, wordNameValue, COLUMN_NAME, wordName);
-        Log.d(Constants.LOG_TAG, wordName + " description added in db");
+        if (wordDescription != null) {
+            Log.d(Constants.LOG_TAG, wordName + " description added in db");
+        } else {
+            Log.d(Constants.LOG_TAG, wordName + " EMPTY description added in db");
+
+        }
 
         db.close();
     }
