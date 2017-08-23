@@ -213,7 +213,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 wordDescriptionTextView.setText(getString(R.string.empty_word_description_not_exist));
             }
         } else {
-            wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription()));
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription(), Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription()));
+            }
         }
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);

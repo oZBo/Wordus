@@ -24,23 +24,34 @@ class JsonParse {
             fieldsIterator = jsonRoot(arrayString);
             String nodeType = findJsonValue("Node", null, fieldsIterator);
 
-            fieldsIterator = jsonRoot(arrayString);
-            nodeTypeSwitcher(nodeType, fieldsIterator);
+            nodeTypeSwitcher(nodeType, arrayString);
         }
     }
 
-    private void nodeTypeSwitcher(String nodeType, Iterator<Map.Entry<String, JsonNode>> fieldsIterator) {
+    private void nodeTypeSwitcher(String nodeType, String arrayString) {
         String s;
+        String compare;
+        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jsonRoot(arrayString);
+        Iterator<Map.Entry<String, JsonNode>> fieldsIteratorSpare;
         if (nodeType != null && fieldsIterator != null) {
             switch (nodeType) {
                 case "\"Text\"":
-                    dictionary += deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
+                    s = deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
+
+                    fieldsIteratorSpare = jsonRoot(arrayString);
+                    compare = findJsonValue("IsItalics", null, fieldsIteratorSpare);
+                    if (compare != null && compare.equals("true")) {
+                        dictionary += "<i>" + s + "</i>";
+                    } else {
+                        dictionary += s;
+                    }
                     break;
                 case "\"Abbrev\"":
-                    dictionary += deleteGuillemets(findJsonValue("Text", null, fieldsIterator)) + " ";
+                    s = deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
+                    dictionary += s;
                     break;
                 case "\"Paragraph\"":
-                    dictionary += "\n";
+                    dictionary += "<br>    ";
                     s = findJsonValue("Markup", null, fieldsIterator);
                     new JsonParse().findDescription(s);
                     break;
@@ -65,15 +76,17 @@ class JsonParse {
                     new JsonParse().findDescription(s);
                     break;
                 case "\"Example\"":
-                    dictionary += "\n";
+                    dictionary += "<br>";
                     s = findJsonValue("Markup", null, fieldsIterator);
                     new JsonParse().findDescription(s);
                     break;
                 case "\"CardRef\"":
-                    dictionary += deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
+                    s = deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
+                    dictionary += s;
                     break;
                 case "\"Ref\"":
-                    dictionary += deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
+                    s = deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
+                    dictionary += s;
                     break;
             }
         }
@@ -114,7 +127,7 @@ class JsonParse {
         ArrayList<String> arrayList = new ArrayList<>();
         int oneArrayInt = 0;
         String oneArrayString = "";
-        
+
         char[] charArray = s.toCharArray();
         if (charArray[0] == '[' && charArray[charArray.length - 1] == ']') {
 

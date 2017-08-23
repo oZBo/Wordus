@@ -11,9 +11,9 @@ public class Constants {
     public static final String CUSTOM_FONT_BOLD = "fonts/PT_Sans-Web-Bold.ttf";
     public static final int DESCRIPTION_FOUND_NOTIFY_ID = 1234567891;
     public static final int DESCRIPTIONS_FOUND_NOTIFY_ID = 1234567892;
-    public static final String dahlDictionary = "<b>В. Даль Толковый словарь живого великорусского языка:</b><br>";
-    public static final String explanatoryDictionary = "<b>Д.Н. Ушаков Большой современный толковый словарь русского языка:</b><br>";
-    public static final String urbanDictionary = "Языки городов. Материалы к словарю русской региональной лексики. Под ред. В. И. Беликова:";
+    public static final String dahlDictionary = "<b>В. Даль Толковый словарь живого великорусского языка:</b>";
+    public static final String explanatoryDictionary = "<b>Д.Н. Ушаков Большой современный толковый словарь русского языка:</b>";
+    public static final String urbanDictionary = "<b>Языки городов. Материалы к словарю русской региональной лексики. Под ред. В. И. Беликова:</b>";
     public static final String EMAIL_LINK = "ennakent@gmail.com";
     public static final String SKYPE_LINK = "berdnikov111";
     public static final String LINKEDIN_LINK = "vladislav-berdnikov-3357b4137/";

@@ -8,5 +8,6 @@
     <color name="almostBlackTextColor">#6B6B6B</color>
     <color name="separatorColor">#4d80CBC4</color>
     <color name="indexBarColor">#E0E0E0</color>
+    <color name="beigeColor">#F7F7DF</color>
     <color name="foreground_alpha_50">#88313c5a</color>
 </resources>
