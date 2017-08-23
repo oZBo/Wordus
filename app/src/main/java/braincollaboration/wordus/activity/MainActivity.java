@@ -102,11 +102,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initWidgets() {
         wordDescriptionTextView = (TextView) findViewById(R.id.bottom_sheet_content_text);
-        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/PT_Sans-Web-Regular.ttf");
+        Typeface face = Typeface.createFromAsset(getAssets(), Constants.CUSTOM_FONT_REGULAR);
         wordDescriptionTextView.setTypeface(face);
 
         wordNameTextView = (TextView) findViewById(R.id.bottom_sheet_title_text);
-        face = Typeface.createFromAsset(getAssets(), "fonts/PT_Sans-Web-Bold.ttf");
+        face = Typeface.createFromAsset(getAssets(), Constants.CUSTOM_FONT_BOLD);
         wordNameTextView.setTypeface(face);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);

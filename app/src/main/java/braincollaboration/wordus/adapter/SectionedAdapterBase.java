@@ -2,6 +2,7 @@ package braincollaboration.wordus.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.annotation.IntDef;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import braincollaboration.wordus.WordusApp;
+import braincollaboration.wordus.utils.Constants;
 
 /**
  * A {@link RecyclerView.Adapter} that is capable of automatically generating section header views
@@ -194,6 +198,9 @@ public abstract class SectionedAdapterBase<T extends Categorizable> extends Recy
         if (titleView == null) {
             throw new RuntimeException("The header layout file MUST contain a TextView with the id `android.R.id.title`; unable to bind header views.");
         }
+        Typeface face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), Constants.CUSTOM_FONT_BOLD);
+        titleView.setTypeface(face);
+
         titleView.setTag("TITLE");
         return view;
     }
