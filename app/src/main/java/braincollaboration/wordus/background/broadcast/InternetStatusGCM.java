@@ -22,8 +22,8 @@ import braincollaboration.wordus.utils.MyNotification;
 
 public class InternetStatusGCM extends GcmTaskService {
     private static IInternetStatusCallback callback;
-    private static int wordsSize;
-    private static int rawWordsCount = 0;
+    private static int hasntFoundWordsListSize;
+    private static int wordsCount;
     private static ArrayList<String> foundWordsList = new ArrayList<>();
 
     @Override
@@ -48,11 +48,11 @@ public class InternetStatusGCM extends GcmTaskService {
         DatabaseManager.getInstance().getNotFoundWordsList(context, new DefaultBackgroundCallback<List<Word>>() {
 
             @Override
-            public void doOnSuccess(List<Word> result) {
-                if (!result.isEmpty()) {
-                    wordsSize = result.size();
-                    for (Word word : result) {
-                        rawWordsCount++;
+            public void doOnSuccess(List<Word> hasntFoundWordsList) {
+                if (!hasntFoundWordsList.isEmpty()) {
+                    hasntFoundWordsListSize = hasntFoundWordsList.size();
+                    wordsCount = 0;
+                    for (Word word : hasntFoundWordsList) {
                         searchWordDescriptionRetrofit(word, context);
                     }
                 }
@@ -66,9 +66,6 @@ public class InternetStatusGCM extends GcmTaskService {
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result, context);
-                    if (result.getWordDescription() == null) {
-                        Log.d(Constants.LOG_TAG, word.getWordName() + " description not found");
-                    }
                 }
             }
         });
@@ -78,21 +75,22 @@ public class InternetStatusGCM extends GcmTaskService {
         DatabaseManager.getInstance().addWordDescriptionInDB(context, word, new DefaultBackgroundCallback<Boolean>() {
             @Override
             public void doOnSuccess(Boolean result) {
-                if (result) {
-                    if (word.getWordDescription() != null) {
-                        foundWordsList.add(word.getWordName());
-                        Log.d(Constants.LOG_TAG, word.getWordName() + " description found");
-                    }
-                    if (wordsSize == rawWordsCount) {
-                        makeNotification();
-                    }
+                if (result && word.getWordDescription() != null) {
+                    foundWordsList.add(word.getWordName());
                 }
+
+                wordsCount++;
+                if (hasntFoundWordsListSize == wordsCount) {
+                    makeNotification();
+                }
+
             }
         });
+
     }
 
     private void makeNotification() {
-        MyNotification.sendNotification(this, foundWordsList, wordsSize);
+        MyNotification.sendNotification(this, foundWordsList, hasntFoundWordsListSize);
     }
 
     public static void scheduleSync(Context context, IInternetStatusCallback callback) {

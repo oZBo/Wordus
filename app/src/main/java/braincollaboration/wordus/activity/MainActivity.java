@@ -1,6 +1,9 @@
 package braincollaboration.wordus.activity;
 
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -18,19 +21,18 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.List;
 
+import braincollaboration.wordus.utils.Constants;
 import braincollaboration.wordus.utils.InternetStatusBroadcastReceiver;
 import braincollaboration.wordus.utils.InternetStatusGCM;
 import braincollaboration.wordus.R;
 import braincollaboration.wordus.adapter.IWordAdapterCallback;
 import braincollaboration.wordus.adapter.WordAdapter;
 import braincollaboration.wordus.background.DefaultBackgroundCallback;
-import braincollaboration.wordus.background.broadcast.InternetStatusBroadcastReceiver;
 import braincollaboration.wordus.manager.DatabaseManager;
 import braincollaboration.wordus.manager.RetrofitManager;
 import braincollaboration.wordus.model.Word;
-import braincollaboration.wordus.utils.StringUtils;
-import braincollaboration.wordus.background.broadcast.IInternetStatusCallback;
-import braincollaboration.wordus.background.broadcast.InternetStatusGCM;
+import braincollaboration.wordus.utils.CheckForLetters;
+import braincollaboration.wordus.utils.IInternetStatusCallback;
 import braincollaboration.wordus.utils.InternetUtil;
 import braincollaboration.wordus.utils.MyNotification;
 import braincollaboration.wordus.view.RecyclerViewWithFAB;
@@ -52,12 +54,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView wordNameTextView;
     private InternetStatusBroadcastReceiver mBroadcastReceiver;
 
+    // case when app is onPause to show Notification
+    private static int hasntFoundWordsListSizeForNotification;
+    private static int wordsCountForNotification;
+    private static ArrayList<String> foundWordsListForNotification = new ArrayList<>();
+    private static boolean isOnPause;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // to close plural notification by defined intent
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            closePluralNotification(extras);
+        }
+
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         loadDataFromDB();
+    }
+
+    private void closePluralNotification(Bundle extras) {
+        String tag = extras.getString(Constants.TAG_TASK_ONEOFF_LOG);
+        if (tag != null && tag.equals(Constants.TAG_TASK_ONEOFF_LOG)) {
+            NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+            manager.cancel(Constants.DESCRIPTIONS_FOUND_NOTIFY_ID);
+        }
     }
 
     private void loadDataFromDB() {
@@ -78,7 +101,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initWidgets() {
         wordDescriptionTextView = (TextView) findViewById(R.id.bottom_sheet_content_text);
+        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/PT_Sans-Web-Regular.ttf");
+        wordDescriptionTextView.setTypeface(face);
+
         wordNameTextView = (TextView) findViewById(R.id.bottom_sheet_title_text);
+        face = Typeface.createFromAsset(getAssets(), "fonts/PT_Sans-Web-Bold.ttf");
+        wordNameTextView.setTypeface(face);
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
         recyclerView = (RecyclerViewWithFAB) findViewById(R.id.recycler_view);
@@ -112,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
-        adapter = new WordAdapter(this, R.layout.header_separator, dataSet, this);
+        adapter = new WordAdapter(R.layout.header_separator, dataSet, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -130,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextInputDialog inputDialog = new TextInputDialog(MainActivity.this, new DefaultDialogCallback<String>() {
             @Override
             public void onPositiveButtonClickedWithResult(String s) {
-                addWord(StringUtils.checkIsThisALetters(s));
+                addWord(CheckForLetters.checkIsThisALetters(s));
             }
         });
         inputDialog.show();
@@ -207,33 +236,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void searchWordDescriptionRetrofit(final Word word) {
-        if (isOnPause) {
-            wordsCountForNotification++;
-        }
         RetrofitManager.getInstance().searchWordDescription(word, new DefaultBackgroundCallback<Word>() {
             @Override
             public void doOnSuccess(Word result) {
                 if (result != null) {
                     addWordDescriptionInDB(result);
-
-                    if (isOnPause) {
-                        wordsListForNotification.add(result.getWordName());
-                        if (wordsCountForNotification == wordsSizeForNotification) {
-                            notifyCauseOnPause();
-                        }
+                    // case when app is onPause
+                    if (isOnPause && result.getWordDescription() != null) {
+                        foundWordsListForNotification.add(result.getWordName());
                     }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.no_connection_now_will_be_found_later), Toast.LENGTH_SHORT).show();
+                }
+
+                // case when app is onPause
+                if (isOnPause) {
+                    wordsCountForNotification++;
+                    // and searched word was the last in hasn'tLookedForList
+                    if (wordsCountForNotification == hasntFoundWordsListSizeForNotification) {
+                        notifyCauseOnPause();
+                    }
                 }
             }
         });
     }
 
     private void notifyCauseOnPause() {
-        MyNotification.sendNotification(MainActivity.this, wordsListForNotification, wordsSizeForNotification);
+        MyNotification.sendNotification(MainActivity.this, foundWordsListForNotification, hasntFoundWordsListSizeForNotification);
         wordsCountForNotification = 0;
-        wordsSizeForNotification = 0;
-        wordsListForNotification = new ArrayList<>();
+        hasntFoundWordsListSizeForNotification = 0;
+        foundWordsListForNotification = new ArrayList<>();
 
     }
 
@@ -262,12 +294,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // to search words which have been added without internet
         DatabaseManager.getInstance().getNotFoundWordsList(MainActivity.this, new DefaultBackgroundCallback<List<Word>>() {
             @Override
-            public void doOnSuccess(List<Word> result) {
-                if (!result.isEmpty()) {
+            public void doOnSuccess(List<Word> hasntFoundWordsList) {
+                if (!hasntFoundWordsList.isEmpty()) {
+                    // case when app is onPause to show notification
                     if (isOnPause) {
-                        wordsSizeForNotification = result.size();
+                        hasntFoundWordsListSizeForNotification = hasntFoundWordsList.size();
                     }
-                    for (Word word : result) {
+                    for (Word word : hasntFoundWordsList) {
                         searchWordDescriptionRetrofit(word);
                     }
                 }
