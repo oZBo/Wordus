@@ -30,25 +30,41 @@ class JsonParse {
 
     private void nodeTypeSwitcher(String nodeType, String arrayString) {
         String s;
-        String compare;
         Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jsonRoot(arrayString);
-        Iterator<Map.Entry<String, JsonNode>> fieldsIteratorSpare;
         if (nodeType != null && fieldsIterator != null) {
             switch (nodeType) {
                 case "\"Text\"":
                     s = deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
 
-                    fieldsIteratorSpare = jsonRoot(arrayString);
-                    compare = findJsonValue("IsItalics", null, fieldsIteratorSpare);
-                    if (compare != null && compare.equals("true")) {
-                        dictionary += "<i>" + s + "</i>";
-                    } else {
-                        dictionary += s;
+                    // Italic type
+                    fieldsIterator = jsonRoot(arrayString);
+                    String italic = findJsonValue("IsItalics", null, fieldsIterator);
+                    boolean italicBoolean = (italic != null && italic.equals("true"));
+
+                    // Accent mark
+                    fieldsIterator = jsonRoot(arrayString);
+                    String accent = findJsonValue("IsAccent", null, fieldsIterator);
+                    boolean accentBoolean = (accent != null && accent.equals("true"));
+
+
+                    if (italicBoolean) {
+                        dictionary += "<i>";
                     }
+
+                    dictionary += s;
+
+                    if (accentBoolean) {
+                        dictionary += "&#x301;";
+                    }
+
+                    if (italicBoolean) {
+                        dictionary += "</i>";
+                    }
+
                     break;
                 case "\"Abbrev\"":
                     s = deleteGuillemets(findJsonValue("Text", null, fieldsIterator));
-                    dictionary += s;
+                    dictionary += s + " ";
                     break;
                 case "\"Paragraph\"":
                     dictionary += "<br>    ";
@@ -90,7 +106,6 @@ class JsonParse {
                     break;
             }
         }
-
     }
 
     String findJsonValue(String key, String value, Iterator<Map.Entry<String, JsonNode>> fieldsIterator) {

@@ -46,4 +46,9 @@ public class Word implements Categorizable {
     public String getCategory() {
         return String.valueOf(name.charAt(0));
     }
+
+    @Override
+    public String getName() {
+        return name;
+    }
 }

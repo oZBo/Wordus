@@ -24,7 +24,8 @@ public class MyNotification {
 
         Resources res = context.getResources();
         Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pIntent;
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         NotificationCompat.InboxStyle notificationInbox;
 
@@ -33,7 +34,6 @@ public class MyNotification {
         if (size > 1) {
 
             //to define intent
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.putExtra(Constants.TAG_TASK_ONEOFF_LOG, Constants.TAG_TASK_ONEOFF_LOG);
             pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -70,6 +70,10 @@ public class MyNotification {
         }
         //making usual notification for one found word only
         else {
+            //to define intent
+            intent.putExtra(Constants.TAG_TASK_ONEOFF_LOG, foundWordsList.get(0));
+            pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
             builder.setContentIntent(pIntent)
                     .setSmallIcon(R.drawable.notify_app_ico_for_api21)
                     // 60x60 size is shown without crop

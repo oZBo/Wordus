@@ -23,6 +23,10 @@
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
         <TextView
+            android:shadowColor="@color/almostBlackTextColor"
+            android:shadowDx="4"
+            android:shadowDy="4"
+            android:shadowRadius="5"
             android:id="@+id/bottom_sheet_title_text"
             android:layout_width="match_parent"
             android:layout_height="55dp"

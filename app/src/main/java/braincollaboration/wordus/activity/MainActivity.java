@@ -2,6 +2,7 @@ package braincollaboration.wordus.activity;
 
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -10,6 +11,8 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -60,27 +63,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static int wordsCountForNotification;
     private static ArrayList<String> foundWordsListForNotification = new ArrayList<>();
     private static boolean isOnPause;
+    private Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // to close plural notification by defined intent
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            closePluralNotification(extras);
-        }
+        extras = getIntent().getExtras();
 
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         loadDataFromDB();
     }
 
-    private void closePluralNotification(Bundle extras) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.about_menu_button:
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void interactionToNotification() {
         String tag = extras.getString(Constants.TAG_TASK_ONEOFF_LOG);
-        if (tag != null && tag.equals(Constants.TAG_TASK_ONEOFF_LOG)) {
-            NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-            manager.cancel(Constants.DESCRIPTIONS_FOUND_NOTIFY_ID);
+        if (tag != null) {
+            // to close plural notification by defined intent
+            if (tag.equals(Constants.TAG_TASK_ONEOFF_LOG)) {
+                NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+                manager.cancel(Constants.DESCRIPTIONS_FOUND_NOTIFY_ID);
+            }
+            // to shown specific word by defined intent
+            else {
+                if (!mDataSet.isEmpty()) {
+                    for (Word w : mDataSet) {
+                        if (w.getWordName().equals(tag)) {
+                            onItemClicked(w);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -95,6 +125,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     initRecyclerView(result);
                 } else {
                     adapter.refreshWordList(result);
+                }
+                // to close plural notification intent or shown specific word by defined
+                if (extras != null) {
+                    interactionToNotification();
                 }
             }
         });

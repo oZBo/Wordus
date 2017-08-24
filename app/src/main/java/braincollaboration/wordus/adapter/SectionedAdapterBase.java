@@ -119,7 +119,7 @@ public abstract class SectionedAdapterBase<T extends Categorizable> extends Recy
         Collections.sort(itemList, new Comparator<Categorizable>() {
             @Override
             public int compare(Categorizable lhs, Categorizable rhs) {
-                return String.CASE_INSENSITIVE_ORDER.compare(lhs.getCategory(), rhs.getCategory());
+                return String.CASE_INSENSITIVE_ORDER.compare(lhs.getName(), rhs.getName());
             }
         });
         this.itemList = SectionGenerator.getSectionsForItems(itemList);

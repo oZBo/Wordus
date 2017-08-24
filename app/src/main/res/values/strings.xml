@@ -19,5 +19,6 @@
     <string name="empty_word_description_not_found">Извините, описание еще не найдено.</string>
     <string name="empty_word_description_not_exist">Извините, нет описания для этого слова.</string>
     <string name="input_dialog_header">Поиск слова</string>
+    <string name="about_menu_button">О приложении</string>
 
 </resources>

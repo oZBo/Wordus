@@ -51,7 +51,7 @@ public class RetrofitManager {
                             try {
                                 wordMeaning = response.body().string();
                             } catch (IOException e) {
-                                Log.e(Constants.LOG_TAG, "search response is success. but try-catch error: " + e.toString());
+                                Log.e(Constants.LOG_TAG, "search response is success for : " + innerWord.getWordName() + "; But \"response.body().string();\" try-catch error: " + e.toString());
                             }
 
                             wordMeaning = new JsonResponseNodeTypeDecryption().parse(wordMeaning, innerWord.getWordName());
@@ -67,7 +67,7 @@ public class RetrofitManager {
                         }
                     }, callback);
                 } else {
-                    Log.e(Constants.LOG_TAG, "Code: " + response.code() + ". Search response isn't successful, there is no description for " + innerWord.getWordName());
+                    Log.e(Constants.LOG_TAG, "Code: " + response.code() + ". Search response isn't successful, there is no description for: " + innerWord.getWordName());
                     BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Word>() {
 
                         @Override
