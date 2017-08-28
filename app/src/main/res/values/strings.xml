@@ -10,6 +10,7 @@
     <string name="word_">Слово</string>
     <string name="confirm_title">Подтверждение</string>
     <string name="delete_question">Удалить слово?</string>
+    <string name="delete_success">удалено</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="cancel">Cancel</string>

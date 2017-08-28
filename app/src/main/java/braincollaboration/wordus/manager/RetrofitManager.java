@@ -58,6 +58,7 @@ public class RetrofitManager {
                             if (wordMeaning != null) {
                                 Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description PARSED");
                                 innerWord.setWordDescription(wordMeaning);
+                                innerWord.setEverShown(1);
                             } else {
                                 Log.d(Constants.LOG_TAG, innerWord.getWordName() + " description NOT PARSED");
                             }

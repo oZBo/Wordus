@@ -24,6 +24,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "NAME";
     private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
     private static final String COLUMN_HAS_LOOKED_FOR = "HAS_LOOKED_FOR";
+    private static final String COLUMN_EVER_SHOWN_WORD = "EVER_SHOWN_WORD";
 
     private static volatile WordusDatabaseHelper instance;
 
@@ -57,7 +58,8 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + COLUMN_NAME + " TEXT, "
                     + COLUMN_DESCRIPTION + " TEXT, "
-                    + COLUMN_HAS_LOOKED_FOR + " INTEGER);");
+                    + COLUMN_HAS_LOOKED_FOR + " INTEGER, "
+                    + COLUMN_EVER_SHOWN_WORD + " INTEGER);");
         }
     }
 
@@ -138,16 +140,23 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public static void addWordDescriptionInDB(SQLiteDatabase db, String wordName, String wordDescription, Boolean isDefine) {
+    public static void addWordDescriptionInDB(SQLiteDatabase db, String wordName, String wordDescription, Boolean isDefine, int newFoundWord) {
         ContentValues wordNameValue = makeWordValue(null, COLUMN_DESCRIPTION, wordDescription);
         wordNameValue = makeWordValue(wordNameValue, COLUMN_HAS_LOOKED_FOR, !isDefine ? 0 : 1);
+        wordNameValue = makeWordValue(wordNameValue, COLUMN_EVER_SHOWN_WORD, newFoundWord);
         updateWord(db, wordNameValue, COLUMN_NAME, wordName);
         if (wordDescription != null) {
             Log.d(Constants.LOG_TAG, wordName + " description added in db");
         } else {
             Log.d(Constants.LOG_TAG, wordName + " EMPTY description added in db");
-
         }
+
+        db.close();
+    }
+
+    public static void updateEverShownWordStateInDB(SQLiteDatabase db, String wordName, int everShownWord) {
+        ContentValues wordNameValue = makeWordValue(null, COLUMN_EVER_SHOWN_WORD, everShownWord);
+        updateWord(db, wordNameValue, COLUMN_NAME, wordName);
 
         db.close();
     }
@@ -157,19 +166,21 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = getInstance(context).getReadableDatabase();
             Cursor cursor = db.query(TABLE_NAME,
-                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAS_LOOKED_FOR},
+                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAS_LOOKED_FOR, COLUMN_EVER_SHOWN_WORD},
                     null, null, null, null, null);
             if (cursor.moveToFirst()) {
                 Word word = new Word();
                 word.setWordName(cursor.getString(0));
                 word.setWordDescription(cursor.getString(1));
                 word.setHasLookedFor(cursor.getInt(2) != 0);
+                word.setEverShown(cursor.getInt(3));
                 dataSet.add(word);
                 while (cursor.moveToNext()) {
                     word = new Word();
                     word.setWordName(cursor.getString(0));
                     word.setWordDescription(cursor.getString(1));
                     word.setHasLookedFor(cursor.getInt(2) != 0);
+                    word.setEverShown(cursor.getInt(3));
                     dataSet.add(word);
                 }
             }
@@ -187,7 +198,7 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = getInstance(context).getReadableDatabase();
             Cursor cursor = db.query(TABLE_NAME,
-                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAS_LOOKED_FOR},
+                    new String[]{COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HAS_LOOKED_FOR, COLUMN_EVER_SHOWN_WORD},
                     COLUMN_HAS_LOOKED_FOR + " = ?",
                     new String[]{Integer.toString(0)},
                     null, null, null);
@@ -196,12 +207,14 @@ public class WordusDatabaseHelper extends SQLiteOpenHelper {
                 word.setWordName(cursor.getString(0));
                 word.setWordDescription(cursor.getString(1));
                 word.setHasLookedFor(cursor.getInt(2) != 0);
+                word.setEverShown(cursor.getInt(3));
                 dataSet.add(word);
                 while (cursor.moveToNext()) {
                     word = new Word();
                     word.setWordName(cursor.getString(0));
                     word.setWordDescription(cursor.getString(1));
                     word.setHasLookedFor(cursor.getInt(2) != 0);
+                    word.setEverShown(cursor.getInt(3));
                     dataSet.add(word);
                 }
             }

@@ -24,7 +24,7 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
 
     private IWordAdapterCallback actionsCallback;
 
-    public WordAdapter(@LayoutRes int layoutResId, List<Word> wordList, @NonNull IWordAdapterCallback callback, Context context) {
+    public WordAdapter(@LayoutRes int layoutResId, List<Word> wordList, @NonNull IWordAdapterCallback callback) {
         super.setItemList(wordList);
         this.actionsCallback = callback;
         setCustomHeaderLayout(layoutResId);
@@ -38,8 +38,23 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
     public void onBindItemViewHolder(final RecyclerView.ViewHolder holder, final Word item, @ViewType int viewType) {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.wordName.setText(item.getWordName());
-        int wordStateColor = item.getWordDescription() == null ? WordusApp.getCurrentActivity().getResources().getColor(R.color.noDescriptionColor) : WordusApp.getCurrentActivity().getResources().getColor(R.color.hasDescriptionColor);
+
+        int wordStateColor;
+        if (item.getWordDescription() == null) {
+            wordStateColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.noDescriptionColor);
+        } else {
+            wordStateColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.hasDescriptionColor);
+        }
         viewHolder.wordStateLabel.setBackgroundColor(wordStateColor);
+
+        int wordNameColor;
+        if (item.getEverShown() == 1) {
+            wordNameColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.almostBlackColorText);
+        } else {
+            wordNameColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.mainColorOfText);
+        }
+        viewHolder.wordName.setTextColor(wordNameColor);
+
         viewHolder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

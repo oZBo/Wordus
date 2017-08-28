@@ -77,7 +77,25 @@ public class DatabaseManager {
                 if (db != null && WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
                     db = WordusDatabaseHelper.getWritableDB(context);
                     if (db != null) {
-                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.getHasLookedFor());
+                        WordusDatabaseHelper.addWordDescriptionInDB(db, word.getWordName(), word.getWordDescription(), word.getHasLookedFor(), word.getEverShown());
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }, callback);
+    }
+
+    public void updateEverShownWordStateInDB(final Word word, DefaultBackgroundCallback<Boolean> callback) {
+        BackgroundManager.getInstance().doBackgroundTask(new IBackgroundTask<Boolean>() {
+
+            @Override
+            public Boolean execute() {
+                SQLiteDatabase db = WordusDatabaseHelper.getReadableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                if (db != null && WordusDatabaseHelper.isDBContainAWord(db, word.getWordName())) {
+                    db = WordusDatabaseHelper.getWritableDB(WordusApp.getCurrentActivity().getApplicationContext());
+                    if (db != null) {
+                        WordusDatabaseHelper.updateEverShownWordStateInDB(db, word.getWordName(), word.getEverShown());
                         return true;
                     }
                 }

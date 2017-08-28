@@ -15,7 +15,7 @@
         android:layout_marginRight="8dp"
         android:gravity="center"
         android:textAllCaps="true"
-        android:textColor="@color/almostBlackTextColor"
+        android:textColor="@color/mainColorOfText"
         android:textSize="@dimen/default_title_text_size"
         tools:text="Header" />
 

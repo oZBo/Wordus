@@ -20,7 +20,7 @@
         android:layout_marginRight="@dimen/base_margin"
         android:layout_toRightOf="@+id/word_state_label"
         android:text="@string/word_"
-        android:textColor="@color/almostBlackTextColor"
+        android:textColor="@color/mainColorOfText"
         android:textSize="@dimen/default_textRecyclerView_size" />
 
     <ImageButton

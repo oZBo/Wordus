@@ -9,6 +9,8 @@ public class Word implements Categorizable {
     private String description;
     private int id;
     private boolean hasLookedFor;
+    // 1 - new found and never shown word; 0 - not found or shown word;
+    private int everShown;
 
     public String getWordName() {
         return name;
@@ -40,6 +42,14 @@ public class Word implements Categorizable {
 
     public void setHasLookedFor(boolean hasLookedFor) {
         this.hasLookedFor = hasLookedFor;
+    }
+
+    public int getEverShown() {
+        return everShown;
+    }
+
+    public void setEverShown(int shown) {
+        everShown = shown;
     }
 
     @Override

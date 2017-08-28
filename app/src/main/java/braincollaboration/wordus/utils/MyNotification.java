@@ -24,7 +24,6 @@ public class MyNotification {
 
         Resources res = context.getResources();
         Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pIntent;
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         NotificationCompat.InboxStyle notificationInbox;
@@ -32,9 +31,6 @@ public class MyNotification {
         int size = foundWordsList.size();
         //making inbox notification for more than one found word
         if (size > 1) {
-
-            //to define intent
-            intent.putExtra(Constants.TAG_TASK_ONEOFF_LOG, Constants.TAG_TASK_ONEOFF_LOG);
             pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             builder.setAutoCancel(true)
@@ -71,6 +67,7 @@ public class MyNotification {
         //making usual notification for one found word only
         else {
             //to define intent
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.putExtra(Constants.TAG_TASK_ONEOFF_LOG, foundWordsList.get(0));
             pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -81,7 +78,7 @@ public class MyNotification {
                     .setTicker("Найдено слово!")
                     .setAutoCancel(true)
                     .setContentTitle("Найдено слово")
-                    .setContentText("Найдено описание слова <" + foundWordsList.get(0) + ">.")
+                    .setContentText("Найдено описание слова <" + foundWordsList.get(0) + ">")
                     .setDefaults(NotificationCompat.DEFAULT_ALL);
 
             notificationManager.notify(Constants.DESCRIPTION_FOUND_NOTIFY_ID, builder.build());

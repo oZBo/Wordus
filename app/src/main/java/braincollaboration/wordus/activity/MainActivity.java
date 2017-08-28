@@ -93,27 +93,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void interactionToNotification() {
-        String tag = extras.getString(Constants.TAG_TASK_ONEOFF_LOG);
-        if (tag != null) {
-            // to close plural notification by defined intent
-            if (tag.equals(Constants.TAG_TASK_ONEOFF_LOG)) {
-                NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-                manager.cancel(Constants.DESCRIPTIONS_FOUND_NOTIFY_ID);
-            }
-            // to shown specific word by defined intent
-            else {
-                if (!mDataSet.isEmpty()) {
-                    for (Word w : mDataSet) {
-                        if (w.getWordName().equals(tag)) {
-                            onItemClicked(w);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private void loadDataFromDB() {
         DatabaseManager.getInstance().getWordsList(new DefaultBackgroundCallback<List<Word>>() {
             @Override
@@ -126,12 +105,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     adapter.refreshWordList(result);
                 }
-                // to close plural notification intent or shown specific word by defined
-                if (extras != null) {
-                    interactionToNotification();
-                }
+                // to close notifications or/and shown description of the specific word
+                interactionToNotification();
             }
         });
+    }
+
+    private void interactionToNotification() {
+        // to close any notification
+        NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+        manager.cancelAll();
+
+        // to shown specific word by defined intent
+        if (extras != null) {
+            String tag = extras.getString(Constants.TAG_TASK_ONEOFF_LOG);
+            if (!mDataSet.isEmpty() && tag != null) {
+                for (Word w : mDataSet) {
+                    if (w.getWordName().equals(tag)) {
+                        onItemClicked(w);
+                    }
+                }
+            }
+        }
     }
 
     private void initWidgets() {
@@ -176,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initRecyclerView(List<Word> dataSet) {
         mDataSet = dataSet;
-        adapter = new WordAdapter(R.layout.header_separator, dataSet, this, this);
+        adapter = new WordAdapter(R.layout.header_separator, dataSet, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -247,14 +242,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 wordDescriptionTextView.setText(getString(R.string.empty_word_description_not_exist));
             }
         } else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription(), Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription()));
-            }
+            wordDescriptionTextView.setText(Html.fromHtml(word.getWordDescription()));
         }
 
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        // if this word is new found and never shown
+        if (word.getEverShown() == 1) {
+            //set to already shown
+            word.setEverShown(0);
+            updateEverShownWordState(word);
+        }
+    }
+
+    private void updateEverShownWordState(final Word word) {
+        DatabaseManager.getInstance().updateEverShownWordStateInDB(word, new DefaultBackgroundCallback<Boolean>() {
+            @Override
+            public void doOnSuccess(Boolean result) {
+                if (result) {
+                    addWordToListView(word);
+                }
+            }
+        });
     }
 
     @Override
@@ -267,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void doOnSuccess(Void result) {
                         mDataSet.remove(word);
                         adapter.refreshWordList(mDataSet);
+                        Toast.makeText(MainActivity.this, word.getWordName() + " " + getString(R.string.delete_success), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
