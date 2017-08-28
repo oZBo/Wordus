@@ -47,13 +47,17 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
         }
         viewHolder.wordStateLabel.setBackgroundColor(wordStateColor);
 
+        Typeface face;
         int wordNameColor;
         if (item.getEverShown() == 1) {
             wordNameColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.almostBlackColorText);
+            face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), Constants.CUSTOM_FONT_BOLD);
         } else {
             wordNameColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.mainColorOfText);
+            face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), Constants.CUSTOM_FONT_REGULAR);
         }
         viewHolder.wordName.setTextColor(wordNameColor);
+        viewHolder.wordName.setTypeface(face);
 
         viewHolder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,8 +91,6 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
             super(itemView);
 
             wordName = (TextView) itemView.findViewById(R.id.recycler_item_headline_text);
-            Typeface face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), Constants.CUSTOM_FONT_REGULAR);
-            wordName.setTypeface(face);
             wordStateLabel = itemView.findViewById(R.id.word_state_label);
             deleteButton = (ImageButton) itemView.findViewById(R.id.recyclerViewItemDeleteButton);
             rootView = (RelativeLayout) itemView.findViewById(R.id.recycler_item_relativeLayout);

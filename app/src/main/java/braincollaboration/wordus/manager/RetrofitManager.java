@@ -23,7 +23,7 @@ public class RetrofitManager {
     private final static int DICTIONARY_ID = 1049;
     private final static int SEARCH_ZONE = 1;
     private final static int START_INDEX = 0;
-    private final static int PAGE_SIZE = 3;
+    private final static int PAGE_SIZE = 4;
 
     private RetrofitManager() {
     }

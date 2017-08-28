@@ -30,6 +30,10 @@ public class JsonResponseNodeTypeDecryption {
             } else if (dict.equalsIgnoreCase("\"Explanatory (Ru-Ru)__" + wordName + "\"")) {
                 fieldsIterator = jp.jsonRoot(jsonMainItem);
                 String explanDictMeaning = jp.findJsonValue("Body", null, fieldsIterator);
+                // to show the whole description in case when word is "homograph/омограф" ("земля" and "Земля" has a different description)
+                if (mapDictionaries.containsKey(Constants.explanatoryDictionary)) {
+                    explanDictMeaning += mapDictionaries.get(Constants.explanatoryDictionary);
+                }
                 mapDictionaries.put(Constants.explanatoryDictionary, explanDictMeaning);
             } else if (dict.equalsIgnoreCase("\"UrbanDictionary (Ru-Ru)__" + wordName + "\"")) {
                 fieldsIterator = jp.jsonRoot(jsonMainItem);
