@@ -9,6 +9,7 @@ public class Constants {
     public static final String BASE_URL = "https://developers.lingvolive.com/";
     public static final String CUSTOM_FONT_REGULAR = "fonts/PT_Sans-Web-Regular.ttf";
     public static final String CUSTOM_FONT_BOLD = "fonts/PT_Sans-Web-Bold.ttf";
+    public static final String CUSTOM_FONT_LIGHT = "fonts/OpenSans-Light.ttf";
     public static final int DESCRIPTION_FOUND_NOTIFY_ID = 1234567891;
     public static final int DESCRIPTIONS_FOUND_NOTIFY_ID = 1234567892;
     public static final String dahlDictionary = "<b>В. Даль Толковый словарь живого великорусского языка:</b>";

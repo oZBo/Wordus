@@ -10,4 +10,5 @@
     <dimen name="default_textView_size">22sp</dimen>
     <dimen name="default_textRecyclerView_size">22sp</dimen>
     <dimen name="default_title_text_size">25sp</dimen>
+    <dimen name="default_header_text_size">25sp</dimen>
 </resources>

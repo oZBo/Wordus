@@ -1,7 +1,6 @@
 package braincollaboration.wordus.adapter;
 
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -39,16 +38,11 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.wordName.setText(item.getWordName());
 
-        int wordStateColor;
-        if (item.getWordDescription() == null) {
-            wordStateColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.noDescriptionColor);
-        } else {
-            wordStateColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.hasDescriptionColor);
-        }
-        viewHolder.wordStateLabel.setBackgroundColor(wordStateColor);
-
         Typeface face;
         int wordNameColor;
+        int wordStateColor;
+
+        // not opened new words
         if (item.getEverShown() == 1) {
             wordNameColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.almostBlackColorText);
             face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), Constants.CUSTOM_FONT_BOLD);
@@ -56,6 +50,18 @@ public class WordAdapter extends SectionedAdapterBase<Word> {
             wordNameColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.mainColorOfText);
             face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), Constants.CUSTOM_FONT_REGULAR);
         }
+
+        if (item.getWordDescription() == null) {
+            wordStateColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.noDescriptionColor);
+            // to apply font to unfounded words
+            if (item.getHasLookedFor()) {
+                face = Typeface.createFromAsset(WordusApp.getCurrentActivity().getApplicationContext().getAssets(), Constants.CUSTOM_FONT_LIGHT);
+            }
+        } else {
+            wordStateColor = WordusApp.getCurrentActivity().getResources().getColor(R.color.hasDescriptionColor);
+        }
+
+        viewHolder.wordStateLabel.setBackgroundColor(wordStateColor);
         viewHolder.wordName.setTextColor(wordNameColor);
         viewHolder.wordName.setTypeface(face);
 

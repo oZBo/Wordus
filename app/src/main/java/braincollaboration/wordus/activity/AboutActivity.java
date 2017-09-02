@@ -35,7 +35,8 @@ public class AboutActivity extends Activity {
                 .setShowAsCard(true)
                 .build();
 
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(-1, -2);
-        addContentView(view, layoutParams);
+        addContentView(view, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
     }
 }
