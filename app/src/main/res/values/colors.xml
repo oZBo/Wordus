@@ -11,4 +11,5 @@
     <color name="indexBarColor">#E0E0E0</color>
     <color name="beigeColor">#F7F7DF</color>
     <color name="foreground_alpha_50">#88313c5a</color>
+    <color name="about_cover">#EDFBC1</color>
 </resources>
