@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.stone.vega.library.VegaLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
         recyclerView = (RecyclerViewWithFAB) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new VegaLayoutManager());
     }
 
     private void configureBottomSheet() {

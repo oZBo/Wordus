@@ -73,6 +73,7 @@ dependencies {
         transitive = true;
     }
     compile 'com.github.jrvansuita:MaterialAbout:0.1.7'
+    compile 'com.stone.vega.library:VegaLayoutManager:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
